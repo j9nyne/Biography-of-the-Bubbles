@@ -1,0 +1,3468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biography of the Bubbles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#08070c;
+  --void-2:#0d0c14;
+  --panel:#121119;
+  --line:#242233;
+  --line-soft:#1a1826;
+  --ink:#e9e6f2;
+  --ink-dim:#a29dbd;
+  --ink-faint:#6b6784;
+
+  --amber:#e0a94e;
+  --amber-dim:#8a6e3a;
+  --amber-glow:rgba(224,169,78,.12);
+
+  --turq:#5ec9c9;
+  --turq-dim:#3c7f7f;
+  --turq-glow:rgba(94,201,201,.12);
+
+  /* Deliberately not the same hex as --amber: a sublime-register outline on a 1999 (amber-
+     filled) node needs to read as a distinct ring, not blend into the fill it surrounds. */
+  --sublime:#ffe08a;
+  --demonic:#c9556b;
+  --paired:#9b7fd4;
+  --deflated:#5f6a7a;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+/* Scroll-snap lives on .spine-scroll (below), NOT on html/body. It was
+   originally on html — the same container the whole page scrolls in — and
+   mandatory snapping there kept trapping the reader wherever the LAST snap
+   point in the document happened to be: once free-scrolling content (first
+   Diptych's overflow, then the Metaphors section) followed that point with
+   nothing snap-aligned after it, scrolling into that content got yanked
+   straight back. Adding another snap target further down just moved the
+   trap, it didn't remove it — mandatory snapping in a single shared
+   container can never coexist with free-scroll content after it. Switching
+   to proximity avoided the trap but softened the snap everywhere, including
+   the prologue→Chapter 1 handoff, which is what actually needs to feel crisp.
+   Scoping mandatory snap to its own bounded, one-viewport-tall
+   .spine-scroll container (prologue + all 8 chapters) fixes both: crisp
+   snapping throughout that region, and once the reader scrolls past its
+   last chapter they've simply reached the end of that container's own
+   scrollable content — the outer page just continues normally into
+   Metaphors, no next snap target required, no way to get trapped. */
+body{
+  margin:0;
+  background:var(--void);
+  color:var(--ink);
+  font-family:'Newsreader',Georgia,serif;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--paired);color:#08070c;}
+
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+a{color:inherit;}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+}
+
+/* ---------- top nav ---------- */
+#topnav{
+  position:sticky;top:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.7rem 1.2rem;
+  background:rgba(8,7,12,.88);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.72rem;
+  letter-spacing:.04em;
+}
+#topnav .brand{color:var(--ink);text-transform:uppercase;font-weight:600;letter-spacing:.1em;}
+#topnav .brand span{color:var(--ink-faint);font-weight:400;}
+#topnav nav{display:flex;gap:1.1rem;flex-wrap:wrap;}
+#topnav nav button{
+  background:none;border:none;color:var(--ink-dim);cursor:pointer;
+  font-family:inherit;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
+  padding:.3rem 0;border-bottom:1px solid transparent;
+}
+#topnav nav button:hover,#topnav nav button.active{color:var(--ink);border-bottom-color:var(--paired);}
+#topnav nav button:focus-visible, a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+  outline:2px solid var(--paired); outline-offset:2px;
+}
+
+/* ---------- view containers ---------- */
+.view{display:none;}
+.view.active{display:block;}
+
+/* ---------- prologue + chapter spine's own scroll region ---------- */
+/* Bounded, one-viewport-tall scroll container holding the prologue and all
+   8 chapters, with its own mandatory snap — isolated from the page's normal
+   scroll so mandatory snapping can never trap the reader against later
+   free-scroll content (Metaphors, footer). See the html{} comment above for
+   the full history of why this moved off html/body. */
+.spine-scroll{
+  height:100vh; overflow-y:auto;
+  scroll-snap-type:y mandatory;
+}
+
+/* ---------- hero / prologue ---------- */
+.prologue{
+  min-height:80vh;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;
+  padding:5rem 1.5rem 4rem;
+  background:
+    radial-gradient(ellipse 60% 40% at 25% 20%, var(--amber-glow), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 75% 30%, var(--turq-glow), transparent 60%);
+  /* .spine-scroll (above) is mandatory-snap, so the top of the page has to be a
+     snap target too — otherwise mandatory snapping pulls even a fresh page LOAD
+     toward the nearest valid snap point, which is Chapter 1 (the first
+     .chapter-section), skipping the prologue's project title and the bubble-intro
+     sequence entirely before the reader ever sees them. */
+  scroll-snap-align:start;
+}
+.prologue .eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink-faint);margin-bottom:1.4rem;
+}
+.prologue h1{
+  font-size:clamp(2.3rem,6vw,4.2rem);font-weight:500;margin:0 0 1.6rem;
+  letter-spacing:-.01em;
+  background:linear-gradient(90deg,var(--amber),var(--paired) 50%,var(--turq));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.prologue .sub{max-width:640px;color:var(--ink-dim);font-size:1.15rem;font-style:italic;margin-bottom:2.2rem;}
+.prologue .authorial{max-width:620px;text-align:left;color:var(--ink-dim);font-size:.95rem;line-height:1.75;border-left:2px dashed var(--line);padding-left:1.2rem;margin-bottom:2.4rem;}
+.prologue .authorial em{color:var(--ink-faint);}
+.scrolldown{
+  font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+/* ---------- bubble intro (prologue teaching sequence) ---------- */
+.bubble-intro{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;position:relative;cursor:pointer;user-select:none;
+}
+.bubble-intro:focus-visible{outline:2px solid var(--turq);outline-offset:6px;}
+.bubble-intro .skip{
+  position:absolute;top:0;right:0;
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint);background:none;border:1px solid var(--line);border-radius:999px;
+  padding:.5rem .9rem;cursor:pointer;
+}
+.bubble-intro .skip:hover,.bubble-intro .skip:focus-visible{color:var(--ink);border-color:var(--ink-faint);}
+
+.bubble-field{position:relative;width:100%;height:220px;display:flex;align-items:center;justify-content:center;}
+.bp-bubble{
+  position:absolute;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #ffffff, rgba(255,255,255,.55) 100%);
+  box-shadow:0 0 90px 26px rgba(255,255,255,.4);
+  animation:bp-float 6s ease-in-out infinite;
+  transition:background 1.1s ease, box-shadow 1.1s ease;
+}
+.bp-bubble[data-color="amber"]{
+  background:radial-gradient(circle at 35% 30%, #fff3d9, var(--amber) 100%);
+  box-shadow:0 0 100px 30px var(--amber-glow), 0 0 40px 6px rgba(224,169,78,.6);
+}
+.bp-bubble[data-color="turq"]{
+  background:radial-gradient(circle at 35% 30%, #e3fbfb, var(--turq) 100%);
+  box-shadow:0 0 100px 30px var(--turq-glow), 0 0 40px 6px rgba(94,201,201,.6);
+}
+/* The float animation's keyframes set `transform` on every frame, which silently overrides
+   any translateX set by a class rule (animation transforms always win over static ones) —
+   that's what was collapsing the "paired" bubbles back to the same spot: the bp-float
+   keyframes kept resetting the X offset every frame. Each paired state below bakes its own
+   horizontal offset into the keyframes alongside the vertical float, instead of relying on
+   transform composition that plain CSS doesn't do. The "-in" variants front-load a slide
+   from the off-screen/centered starting point over the first 20% of the animation, then
+   settle into the same ease-in-out float as everything else — one continuous animation
+   instead of a transition handing off to an animation (which would otherwise cause a visual
+   snap, since transitions can't interpolate into animation-driven transform values).*/
+.bp-bubble.secondary{width:96px;height:96px;opacity:0;transform:translateX(200px);animation:bp-float 6s ease-in-out infinite reverse;}
+.bp-bubble.secondary.show{opacity:1;animation:bp-float-right-in 1.2s ease forwards, bp-float-right 6s ease-in-out 1.2s infinite reverse;transition:opacity 1s ease;}
+.bp-bubble.primary.paired{animation:bp-float-left-in 1.2s ease forwards, bp-float-left 6s ease-in-out 1.2s infinite;}
+@keyframes bp-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+@keyframes bp-float-left{0%,100%{transform:translateX(-90px) translateY(0);}50%{transform:translateX(-90px) translateY(-12px);}}
+@keyframes bp-float-right{0%,100%{transform:translateX(110px) translateY(0);}50%{transform:translateX(110px) translateY(-12px);}}
+@keyframes bp-float-left-in{from{transform:translateX(0) translateY(0);}to{transform:translateX(-90px) translateY(0);}}
+@keyframes bp-float-right-in{from{transform:translateX(200px) translateY(0);}to{transform:translateX(110px) translateY(0);}}
+
+.bp-caption{
+  max-width:480px;min-height:70px;margin-top:1.4rem;padding:0 1.4rem;text-align:center;
+  font-style:italic;color:var(--ink-dim);font-size:1.05rem;line-height:1.6;
+  opacity:0;transform:translateY(6px);transition:opacity .6s ease, transform .6s ease;
+}
+.bp-caption.show{opacity:1;transform:translateY(0);}
+
+.bp-progress{display:flex;gap:.5rem;justify-content:center;margin-top:1.6rem;}
+.bp-progress span{width:5px;height:5px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s;}
+.bp-progress span.active{background:var(--ink-dim);transform:scale(1.3);}
+
+.prologue-content{opacity:0;transition:opacity 1s ease;}
+.prologue-content.show{opacity:1;}
+
+/* ---------- chapter header ---------- */
+.chapter-head{
+  text-align:center;padding:3.5rem 1.5rem 2rem;
+  border-top:1px solid var(--line);
+}
+.chapter-head .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);}
+.chapter-head .eyebrow .prov{color:var(--paired);}
+.chapter-head h2{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:500;margin:.4rem 0 .5rem;}
+.chapter-head .count{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--ink-faint);}
+.chapter-head.section-divider{border-top:3px solid var(--line);padding-top:4.5rem;}
+.section-intro{
+  max-width:640px;margin:0 auto 2.5rem;text-align:left;color:var(--ink-dim);
+  font-size:.95rem;line-height:1.75;border-left:2px dashed var(--line);padding:0 0 0 1.2rem;
+}
+.section-intro em{color:var(--ink-faint);}
+
+/* each Metaphors subcategory (heading + its 1999/2025 card deck) starts
+   hidden/offset and fades+lifts into place as the reader scrolls to it,
+   wired by wireScrollReveal() below. Default state also covers browsers
+   without IntersectionObserver (feature-checked in JS) — falls back to
+   .is-visible added immediately, never leaving content permanently hidden. */
+[data-reveal]{
+  opacity:0; transform:translateY(28px);
+  transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1);
+}
+[data-reveal].is-visible{opacity:1; transform:translateY(0);}
+
+/* ---------- split screen spine ---------- */
+.spine{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--line-soft);
+}
+.col{padding:2rem 1.4rem;min-height:40px;}
+.col-1999{border-right:1px solid var(--line-soft);background:linear-gradient(180deg,rgba(224,169,78,.03),transparent 300px);}
+.col-2025{background:linear-gradient(180deg,rgba(94,201,201,.03),transparent 300px);}
+.col-label{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  margin-bottom:1.2rem;padding-bottom:.5rem;border-bottom:1px solid var(--line-soft);
+  position:sticky;top:44px;background:var(--void);z-index:5;
+}
+.col-1999 .col-label{color:var(--amber);}
+.col-2025 .col-label{color:var(--turq);}
+
+/* fragment card */
+.fragcard{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:3px;
+  padding:1.3rem 1.3rem 1.1rem;
+  margin-bottom:1.3rem;
+  position:relative;
+}
+.col-1999 .fragcard{border-left:2px solid var(--amber-dim);}
+.col-2025 .fragcard{border-left:2px solid var(--turq-dim);}
+.fragcard .quote{
+  font-size:1.08rem;font-style:italic;line-height:1.6;color:var(--ink);
+  margin:0 0 .8rem;
+}
+.fragcard .quote::before{content:"\201C";}
+.fragcard .quote::after{content:"\201D";}
+.fragcard .subject{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.6rem;
+}
+.fragcard .synopsis{color:var(--ink-dim);font-size:.95rem;margin-bottom:.7rem;}
+.fragcard details{margin:.5rem 0;}
+.fragcard details summary{cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;}
+.fragcard details p{color:var(--ink-dim);font-size:.88rem;margin:.5rem 0 0;}
+.fragcard .meta{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-faint);
+  margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--line-soft);
+  display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:center;
+}
+.fragcard .meta a{color:var(--ink-dim);text-decoration:none;border-bottom:1px dotted var(--ink-faint);}
+.meta-article-myths{display:inline-flex;gap:.3rem;margin-left:.4rem;vertical-align:middle;}
+.meta-article-myths .regbadge{font-size:.56rem;padding:.14rem .4rem;margin-bottom:0;}
+
+/* long quote truncation */
+.quote.truncated{
+  max-height:8.5em;overflow:hidden;position:relative;
+  mask-image:linear-gradient(180deg,#000 65%,transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,#000 65%,transparent 100%);
+}
+.expand-btn{
+  display:inline-block;margin-top:.4rem;
+  background:none;border:1px solid var(--line);color:var(--ink-dim);
+  font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:.3rem .6rem;cursor:pointer;border-radius:2px;
+}
+.expand-btn:hover{border-color:var(--paired);color:var(--ink);}
+
+/* split badge */
+.badge-split{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:.28rem .55rem;border-radius:2px;margin-bottom:.6rem;
+  border:1px solid var(--line);color:var(--ink-dim);background:rgba(94,201,201,.08);
+  cursor:pointer;transition:all .2s;
+}
+.badge-split:hover{border-color:var(--turq);color:var(--turq);}
+
+/* keyword chips */
+.chip-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.6rem;}
+.chip-keyword{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.04em;
+  padding:.2rem .5rem;border-radius:2px;
+  border:1px solid var(--line);color:var(--ink-dim);background:rgba(224,169,78,.08);
+  text-decoration:none;cursor:pointer;transition:all .15s;
+}
+.chip-keyword:hover{border-color:var(--paired);color:var(--ink);background:rgba(155,127,212,.1);}
+
+/* register badge */
+.regbadge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;
+  padding:.28rem .55rem;border-radius:2px;margin-bottom:.6rem;
+  border:1px solid;
+}
+.regbadge .subtheme{opacity:.75;font-weight:400;}
+.regbadge.reg-sublime{color:var(--sublime);border-color:var(--sublime);background:rgba(255,224,138,.08);}
+.regbadge.reg-sublime::before{content:"\2600";}
+.regbadge.reg-demonic{color:var(--demonic);border-color:var(--demonic);background:rgba(201,85,107,.08);border-style:solid;}
+.regbadge.reg-demonic::before{content:"\26A0";}
+.regbadge.reg-paired{color:var(--paired);border-color:var(--paired);background:rgba(155,127,212,.08);border-style:double;border-width:3px;}
+.regbadge.reg-paired::before{content:"\25C6";}
+.regbadge.reg-deflated{color:var(--deflated);border-color:var(--deflated);background:transparent;border-style:dashed;}
+.regbadge.reg-deflated::before{content:"\2205";}
+
+/* chapter close band */
+.chapter-close{
+  grid-column:1/-1;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:var(--void-2);
+  padding:2.2rem 1.4rem;
+  margin:0;
+}
+.chapter-close h3{
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 1.2rem;text-align:center;
+}
+.close-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:900px;margin:0 auto;}
+.close-col h4{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.08em;margin:0 0 .7rem;}
+.close-col.c1999 h4{color:var(--amber);}
+.close-col.c2025 h4{color:var(--turq);}
+.regbar{display:flex;height:22px;border-radius:2px;overflow:hidden;margin-bottom:.5rem;border:1px solid var(--line);}
+.regbar span{display:block;height:100%;}
+.regbar .b-sublime{background:var(--sublime);}
+.regbar .b-demonic{background:var(--demonic);}
+.regbar .b-paired{background:var(--paired);}
+.regbar .b-deflated{background:repeating-linear-gradient(45deg,var(--deflated),var(--deflated) 4px,#3a3f4a 4px,#3a3f4a 8px);}
+.regbar .b-none{background:var(--line-soft);}
+.close-legend{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:.5rem 1rem;}
+.close-legend span{display:inline-flex;align-items:center;gap:.3rem;}
+.close-legend i{width:9px;height:9px;display:inline-block;border-radius:1px;}
+
+/* marginalia */
+.marginalia{
+  grid-column:1/-1;
+  border-top:1px solid var(--paired);border-bottom:1px solid var(--paired);
+  background:linear-gradient(90deg,rgba(155,127,212,.05),rgba(155,127,212,.02));
+  padding:2rem 1.5rem;
+  margin:0;
+}
+.marginalia .m-eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--paired);margin-bottom:.6rem;
+}
+.marginalia h3{font-size:1.3rem;font-style:italic;font-weight:500;margin:0 0 .8rem;}
+.marginalia p{color:var(--ink-dim);max-width:760px;font-size:.96rem;}
+.marginalia .m-stat{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--ink);}
+.marginalia.empty-slot{border-style:dashed;background:none;}
+.marginalia.empty-slot p{color:var(--ink-faint);font-style:italic;}
+
+/* ---------- chapter 1: cross-era pair carousel ---------- */
+.pair-carousel{border-top:1px solid var(--line-soft);}
+.pair-slide-head{
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;
+  padding:1.2rem 1.4rem 0;font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);
+}
+.pair-motif{color:var(--paired);}
+.pair-spine{border-top:none;}
+.pair-nav-row{
+  display:flex;align-items:center;justify-content:center;gap:1.2rem;
+  padding:.5rem 1.4rem 1.8rem;
+}
+.pair-nav-btn{
+  background:none;border:1px solid var(--line);color:var(--ink-dim);border-radius:50%;
+  width:36px;height:36px;cursor:pointer;font-size:1rem;line-height:1;
+}
+.pair-nav-btn:hover{border-color:var(--paired);color:var(--ink);}
+.pair-dots{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;max-width:320px;}
+.pair-dot{width:7px;height:7px;border-radius:50%;border:none;background:var(--line);cursor:pointer;padding:0;}
+.pair-dot.active{background:var(--paired);}
+.pair-dot:hover{background:var(--ink-faint);}
+
+/* ---------- chapter 1 (replacement): seven-chapter scrollytelling spine ---------- */
+.chapters{position:relative;}
+
+/* the persistent macro canvas — pinned while chapter text scrolls over it */
+.macro-stage{
+  position:sticky; top:0; height:100vh; width:100%;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; pointer-events:none; z-index:0;
+}
+.macro-stage svg{width:100%;height:100%;}
+.macro-node circle{transition:fill .5s ease, opacity .5s ease;}
+.macro-node{will-change:transform;}
+
+/* each chapter's text content scrolls in normal flow, above the pinned canvas.
+   height (not min-height) plus overflow-y:auto: scroll-snap needs each section to
+   occupy exactly one viewport so the reader always comes to rest on a whole
+   chapter, never mid-chapter — min-height would let a chapter with a lot of
+   curated .chapter-micro content grow taller than 100vh, which breaks that
+   one-chapter-per-screen rest state snap-scroll depends on. overflow-y:auto lets
+   any chapter that does end up taller than the viewport scroll internally instead
+   of clipping its content or breaking the snap points of chapters after it. */
+.chapter-section{
+  position:relative; z-index:1; height:100vh; overflow-y:auto;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:4rem 1.4rem; pointer-events:none;
+  scroll-snap-align:start; scroll-snap-stop:always;
+}
+/* Diptych's grid (legend + SVG) regularly exceeds 100vh — height:100vh +
+   overflow-y:auto on the base rule would trap scroll inside this section's
+   own scrollbar forever, since scroll-snap-stop:always never lets the
+   gesture "escape" a snap point that's still capturing input. So it grows
+   with its content instead of clipping to one screen. Keeps scroll-snap-
+   align:start (it's still a real staircase step, and .spine-scroll being a
+   bounded container means there's no trap risk in keeping it) but drops
+   scroll-snap-stop to normal so a scroll gesture can still carry through it
+   once the reader is done, rather than re-catching every gesture forever. */
+.chapter-section--overflow{
+  height:auto; min-height:100vh; overflow-y:visible;
+  scroll-snap-stop:normal;
+}
+.chapter-section .chapter-head, .chapter-section .chapter-prose,
+.chapter-section .chapter-micro{ pointer-events:auto; }
+.chapter-section .chapter-head{border-top:none;padding-top:0;}
+.chapter-section .chapter-prose{
+  max-width:560px; margin:2rem auto 0; color:var(--ink-dim);
+  font-style:italic; line-height:1.7;
+}
+.chapter-section .chapter-micro{max-width:720px;margin:2.5rem auto 0;}
+.chapter-micro-spine{grid-template-columns:1fr 1fr;border-top:none;gap:0 1.2rem;}
+.chapter-micro-spine .col{padding:0;background:none;min-height:0;}
+.chapter-micro-spine .col-label{position:static;background:none;padding-bottom:.4rem;margin-bottom:.7rem;}
+.fragcard-compact{padding:.9rem 1rem .8rem;margin-bottom:0;cursor:pointer;transition:border-color .2s;}
+.fragcard-compact:hover{border-color:var(--paired);}
+.fragcard-compact .quote{font-size:.85rem;line-height:1.5;margin:0 0 .5rem;max-height:6em;}
+.fragcard-compact .subject{font-size:.62rem;margin-bottom:.4rem;}
+.fragcard-compact .meta{font-size:.65rem;}
+@media (max-width:640px){ .chapter-micro-spine{grid-template-columns:1fr;} }
+
+/* metaphor declarations — a horizontal band well above the chapter head/cards,
+   not vertically centered on the whole section: with fragment cards now filling
+   most of the section's height, centering on the full box put this text right
+   on top of the card headers instead of in clear space. */
+.declaration-pair{
+  position:absolute; top:4.5rem; left:0; right:0; display:flex; align-items:flex-start; justify-content:center;
+  gap:3rem; pointer-events:none; z-index:2;
+}
+.declaration{
+  font-family:'Newsreader',Georgia,serif; font-style:italic; font-weight:500;
+  font-size:clamp(1.3rem,3vw,2rem); opacity:0; white-space:nowrap;
+  text-shadow:0 2px 24px var(--void);
+  transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1);
+}
+.declaration.a{color:var(--amber); transform:translateX(-40px);}
+.declaration.b{color:var(--turq); transform:translateX(40px);}
+.declaration.show{opacity:1; transform:translateX(0);}
+@media (prefers-reduced-motion: reduce){ .declaration{transition:opacity .15s;} }
+
+/* Recede target: once the centered declaration's hold timer fires, it fades
+   out and this badge fades in — anchored to .chapter-head (position:relative)
+   so it sits flush beside the chapter title instead of pinned to the far
+   corners of the section, which read as disconnected from the chapter. */
+.chapter-head{position:relative;}
+.declaration-flank{
+  position:absolute; top:.15em; font-size:.68rem; font-family:'IBM Plex Mono',monospace;
+  font-style:normal; letter-spacing:.02em; white-space:normal; max-width:200px;
+  opacity:0; transition:opacity .8s ease; line-height:1.4;
+}
+.declaration-flank.show{opacity:.85;}
+.declaration-flank.a{color:var(--amber); right:calc(100% + 1.6rem); text-align:right;}
+.declaration-flank.b{color:var(--turq); left:calc(100% + 1.6rem); text-align:left;}
+@media (max-width:900px){ .declaration-flank{display:none;} }
+@media (prefers-reduced-motion: reduce){ .declaration-flank{transition:opacity .15s;} }
+
+/* ---------- chapter 7: correspondences grid ---------- */
+.corr-empty{
+  text-align:center;color:var(--ink-faint);font-family:'IBM Plex Mono',monospace;
+  font-size:.75rem;padding:2rem 0;
+}
+
+/* ---------- Diptych — SVG bubble-pair diagram, ported from the prototype ---------- */
+.diptych-wrap{max-width:960px;margin:0 auto;}
+.diptych-legend{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.6rem;}
+.diptych-legend button{
+  font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.02em;
+  background:none;border:1px solid var(--line);border-radius:999px;color:var(--ink-faint);
+  padding:.35rem .75rem;cursor:pointer;transition:color .2s,border-color .2s;
+}
+.diptych-legend button:hover{color:var(--ink);border-color:var(--ink-faint);}
+.diptych-legend button.active{color:var(--paired);border-color:var(--paired);}
+
+.diptych-stage svg{width:100%;height:auto;display:block;}
+.diptych-frame{max-width:960px;margin:0 auto;border:1px solid var(--line-soft);padding:6px;}
+.diptych-frame-inner{
+  border:1px solid var(--line);padding:44px 28px 20px;position:relative;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.025), transparent 62%);
+}
+.diptych-caption{
+  text-align:center;margin-top:1.1rem;font-size:.68rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.diptych-caption em{color:var(--ink-dim);font-style:italic;text-transform:none;letter-spacing:0;}
+
+.diptych-col-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;}
+.diptych-col-label.a{fill:var(--amber);}
+.diptych-col-label.b{fill:var(--turq);}
+
+.diptych-cell{cursor:pointer;transition:opacity .35s;}
+.diptych-cell circle.core{transition:filter .3s, transform .3s;transform-box:fill-box;transform-origin:center;}
+.diptych-cell circle.core.a{fill:var(--amber);}
+.diptych-cell circle.core.b{fill:var(--turq);}
+.diptych-cell:hover circle.core{filter:brightness(1.15);}
+
+.diptych-is-dimmed{opacity:.14;}
+.diptych-is-picked circle.core{transform:scale(1.35);}
+.diptych-is-picked circle.core.a{filter:drop-shadow(0 0 10px rgba(224,169,78,.4));}
+.diptych-is-picked circle.core.b{filter:drop-shadow(0 0 10px rgba(94,201,201,.4));}
+
+.diptych-bob{animation:diptych-bob-float var(--bob-dur,5s) ease-in-out var(--bob-delay,0s) infinite;}
+@keyframes diptych-bob-float{ 0%,100%{transform:translate(0,0);} 50%{transform:translate(var(--bob-dx,1.5px), var(--bob-dy,-2px));} }
+@media (prefers-reduced-motion: reduce){ .diptych-bob{animation:none;} }
+
+.diptych-connector-line{fill:none;stroke:var(--ink-faint);stroke-width:1.4px;pointer-events:none;}
+.diptych-connector-dot{pointer-events:none;}
+.diptych-hinge-line{stroke:var(--line);stroke-width:1px;stroke-dasharray:1,4;}
+.diptych-hinge-plate{fill:var(--void-2);stroke:var(--line-soft);stroke-width:1px;}
+.diptych-hinge-pin{fill:var(--ink-faint);}
+
+.diptych-tooltip{
+  position:fixed;pointer-events:none;z-index:920;
+  background:var(--void-2);border:1px solid var(--line);border-radius:8px;
+  padding:.45rem .7rem;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-dim);
+  opacity:0;transform:translateY(4px);transition:opacity .15s, transform .15s;max-width:220px;
+}
+.diptych-tooltip.show{opacity:1;transform:translateY(0);}
+.diptych-tooltip .t-year.a{color:var(--amber);font-weight:600;}
+.diptych-tooltip .t-year.b{color:var(--turq);font-weight:600;}
+
+.diptych-panel{
+  position:fixed;left:0;right:0;bottom:0;z-index:910;
+  background:var(--void-2);border-top:1px solid var(--line);
+  max-height:52vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .4s cubic-bezier(.2,.8,.2,1);
+  padding:1.4rem 1.2rem 2rem;
+}
+.diptych-panel.open{transform:translateY(0);}
+.diptych-panel-inner{max-width:900px;margin:0 auto;}
+.diptych-panel-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;}
+.diptych-panel-family{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
+.diptych-panel-motif{color:var(--paired);font-style:italic;font-size:.9rem;flex:1;}
+.diptych-panel-close{background:none;border:1px solid var(--line);border-radius:999px;color:var(--ink-faint);width:26px;height:26px;cursor:pointer;font-size:.9rem;line-height:1;}
+.diptych-panel-close:hover{color:var(--ink);border-color:var(--ink-faint);}
+.diptych-panel-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media (max-width:640px){ .diptych-panel-cards{grid-template-columns:1fr;} }
+.diptych-pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem 1.15rem;}
+.diptych-pcard.col-1999{border-left:3px solid var(--amber-dim);}
+.diptych-pcard.col-2025{border-left:3px solid var(--turq-dim);}
+.diptych-pcard .yr{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem;}
+.diptych-pcard.col-1999 .yr{color:var(--amber);}
+.diptych-pcard.col-2025 .yr{color:var(--turq);}
+.diptych-pcard .quote{font-size:.92rem;line-height:1.6;color:var(--ink-dim);margin:0 0 .7rem;}
+.diptych-pcard .quote mark{background:none;font-weight:600;font-style:normal;font-size:1.16em;padding:0 .04em;}
+.diptych-pcard.col-1999 .quote mark{color:var(--amber);}
+.diptych-pcard.col-2025 .quote mark{color:var(--turq);}
+.diptych-pcard .meta{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ink-faint);border-top:1px solid var(--line-soft);padding-top:.5rem;}
+
+/* ---------- metaphors: deck + cards ---------- */
+.metadeck{position:relative;min-height:260px;margin-bottom:2.2rem;padding-bottom:.6rem;}
+.deck-hint{
+  text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--ink-faint);
+  letter-spacing:.06em;text-transform:uppercase;margin-top:.3rem;
+}
+
+/* fallback card — no source_image curated yet */
+.metacard{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:1.1rem;position:absolute;top:0;left:0;right:0;min-height:260px;
+  transition:transform .25s ease, box-shadow .25s ease;
+  box-shadow:0 4px 18px rgba(0,0,0,.35);
+  cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;
+}
+.metadeck.settled .metacard{cursor:default;}
+.col-1999 .metacard{border-left:2px solid var(--amber-dim);}
+.col-2025 .metacard{border-left:2px solid var(--turq-dim);}
+.metacard .subject{
+  font-family:'Newsreader',serif;font-style:italic;font-size:1.05rem;color:var(--ink);
+  margin-bottom:.5rem;line-height:1.4;
+}
+.metacard .meta{
+  font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--ink-faint);
+  margin-top:auto;padding-top:.5rem;border-top:1px solid var(--line-soft);
+  display:flex;flex-wrap:wrap;gap:.3rem .7rem;
+}
+.metacard .meta a{color:var(--ink-dim);text-decoration:none;border-bottom:1px dotted var(--ink-faint);}
+.metacard .no-image-flag{
+  display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--deflated);border:1px dashed var(--deflated);border-radius:2px;padding:.15rem .4rem;margin-bottom:.7rem;align-self:flex-start;
+}
+
+/* bestiary flip-card — tarot front / specimen-label back */
+.beastcard{perspective:1000px;position:absolute;top:0;left:0;right:0;min-height:260px;cursor:pointer;}
+.beastcard-inner{
+  position:relative;width:100%;height:100%;min-height:260px;transform-style:preserve-3d;
+  transition:transform .5s;
+}
+.beastcard[data-flipped="1"] .beastcard-inner{transform:rotateY(180deg);}
+.beastcard-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid var(--line);border-radius:10px;
+  padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between;
+}
+
+/* front — tarot card */
+.beastcard-front{
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(224,169,78,.10), transparent 60%),
+    var(--panel);
+}
+.col-2025 .beastcard-front{
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(94,201,201,.10), transparent 60%),
+    var(--panel);
+}
+.beastcard-tag{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--amber-dim);
+}
+.col-2025 .beastcard-tag{color:var(--turq-dim);}
+.beastcard-voice{
+  font-family:'Newsreader',serif;font-style:italic;font-size:19px;line-height:1.35;color:var(--ink);
+}
+.beastcard-hint{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-faint);
+}
+
+/* back — specimen label / field report */
+.beastcard-back{
+  transform:rotateY(180deg);
+  background:var(--void-2);
+}
+.beastcard-back .specimen-tag{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.beastcard-back .specimen-quote{
+  font-size:13px;line-height:1.55;color:var(--ink-dim);font-style:normal;font-family:'Newsreader',serif;
+  margin:0;
+}
+.beastcard-back .specimen-quote::before{content:"\201C";}
+.beastcard-back .specimen-quote::after{content:"\201D";}
+.beastcard-back .meta{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--turq);
+}
+.col-1999 .beastcard-back .meta{color:var(--amber);}
+.beastcard-back .meta a{color:inherit;text-decoration:none;border-bottom:1px dotted currentColor;}
+
+.metaphor-close-grid .regbar span{display:block;height:100%;}
+.mc-legend{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:.4rem .8rem;margin-top:.8rem;}
+.mc-legend span{display:inline-flex;align-items:center;gap:.3rem;}
+.mc-legend i{width:9px;height:9px;display:inline-block;border-radius:1px;}
+
+/* ---------- layer 2 : evidence ---------- */
+.evidence-shell{display:grid;grid-template-columns:260px 1fr;gap:0;min-height:70vh;}
+.filters{
+  border-right:1px solid var(--line);padding:1.4rem 1rem;
+  font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+  position:sticky;top:44px;align-self:start;max-height:calc(100vh - 44px);overflow-y:auto;
+}
+.filters h4{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:1.1rem 0 .5rem;}
+.filters h4:first-child{margin-top:0;}
+.filter-group label{display:flex;align-items:center;gap:.4rem;padding:.2rem 0;color:var(--ink-dim);cursor:pointer;}
+.filter-group label:hover{color:var(--ink);}
+.filter-group input{accent-color:var(--paired);}
+.filter-search{
+  width:100%;background:var(--void-2);border:1px solid var(--line);color:var(--ink);
+  font-family:inherit;font-size:.75rem;padding:.35rem .5rem;border-radius:2px;margin-bottom:.4rem;
+}
+.filter-search:focus{outline:none;border-color:var(--paired);}
+.show-all-filter{
+  display:block;background:none;border:none;color:var(--ink-faint);cursor:pointer;
+  font-family:inherit;font-size:.68rem;padding:.3rem 0;text-decoration:underline;
+}
+.show-all-filter:hover{color:var(--paired);}
+
+.edge-type-row{display:flex;align-items:center;justify-content:space-between;gap:.4rem;}
+.edge-type-row label{flex:1;min-width:0;}
+.edge-only-btn{
+  background:none;border:1px solid var(--line);color:var(--ink-faint);cursor:pointer;
+  font-family:inherit;font-size:.6rem;letter-spacing:.03em;text-transform:uppercase;
+  padding:.15rem .4rem;border-radius:2px;flex-shrink:0;opacity:0;transition:opacity .12s;
+}
+.edge-type-row:hover .edge-only-btn{opacity:1;}
+.edge-only-btn:hover{border-color:var(--paired);color:var(--paired);}
+.edge-only-btn:disabled{opacity:.25 !important;cursor:default;}
+.edge-only-btn:disabled:hover{border-color:var(--line);color:var(--ink-faint);}
+@media (hover:none){.edge-only-btn{opacity:1;}}
+.filter-count{color:var(--ink-faint);}
+.clear-filters{
+  background:none;border:1px solid var(--line);color:var(--ink-dim);
+  padding:.3rem .6rem;margin-top:1rem;cursor:pointer;font-family:inherit;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.results{padding:1.4rem;}
+.results-count{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--ink-faint);margin-bottom:1rem;}
+
+/* article groups — chronologically sorted, collapsed by default; each toggle reveals that
+   article's matching fragments only (results already respect the active filters) */
+.evidence-group{border-bottom:1px solid var(--line-soft);}
+.evidence-group summary{
+  position:relative;
+  padding:.9rem .2rem .9rem 1.5rem;cursor:pointer;list-style:none;
+}
+.evidence-group summary::-webkit-details-marker{display:none;}
+.evidence-group summary:hover{background:rgba(255,255,255,.02);}
+.evidence-group summary::before{
+  content:"▸";position:absolute;left:0;top:1rem;color:var(--ink-faint);
+  transition:transform .15s;font-size:.8rem;
+}
+.evidence-group[open] summary::before{transform:rotate(90deg);}
+.evidence-group .eg-summary-top{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--ink-faint);margin-bottom:.35rem;
+}
+.evidence-group.y1999 .eg-date{color:var(--amber);}
+.evidence-group.y2025 .eg-date{color:var(--turq);}
+.evidence-group .eg-title{
+  font-family:'Newsreader',serif;font-size:1.25rem;font-weight:500;color:var(--ink);
+  line-height:1.35;margin-bottom:.5rem;
+}
+.evidence-group .eg-tags{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;}
+.evidence-group .eg-tags .regbadge{margin-bottom:0;}
+.evidence-group .eg-chip{
+  font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.03em;
+  padding:.22rem .55rem;border-radius:2px;border:1px solid var(--line);color:var(--ink-dim);
+}
+.evidence-group .eg-chip-author{color:var(--ink-faint);font-style:italic;}
+.evidence-group .eg-body{padding:0 .2rem .8rem 1.5rem;}
+
+.result-row{
+  padding:.7rem 0;border-top:1px solid var(--line-soft);cursor:pointer;
+  display:grid;grid-template-columns:1fr 100px;gap:1rem;align-items:start;
+}
+.result-row:first-child{border-top:none;}
+.result-row:hover{background:rgba(255,255,255,.02);}
+.result-row .rtext{font-size:.92rem;color:var(--ink-dim);font-style:italic;line-height:1.4;}
+.result-row .rreg{font-family:'IBM Plex Mono',monospace;font-size:.62rem;text-align:right;color:var(--ink-faint);}
+
+/* modal / detail overlay */
+.overlay{
+  position:fixed;inset:0;background:rgba(5,4,8,.82);backdrop-filter:blur(4px);
+  z-index:900;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:3rem 1rem;
+}
+.overlay.open{display:flex;}
+.overlay .fragcard{max-width:640px;width:100%;background:var(--panel);}
+/* full-screen overlay gets its own type scale: the quotation is the reason the
+   reader opened this view, so it dominates — subject/synopsis/context/meta step
+   down from there instead of matching the compact-card and grid uses of the
+   same markup, which need to stay small and uniform. */
+.overlay .fragcard{padding:2.4rem 2.2rem 1.8rem;}
+.overlay .fragcard .subject{font-size:.72rem;letter-spacing:.1em;color:var(--ink-dim);margin-bottom:1rem;}
+.overlay .fragcard .quote{
+  font-size:clamp(1.3rem,2.6vw,1.7rem);line-height:1.55;font-weight:500;
+  color:var(--ink);margin-bottom:1.3rem;
+}
+.overlay .fragcard .synopsis{font-size:1rem;color:var(--ink-dim);margin-bottom:1rem;}
+.overlay .fragcard details summary{font-size:.72rem;}
+.overlay .fragcard details p{font-size:.92rem;}
+.overlay .fragcard .meta{font-size:.7rem;margin-top:1.4rem;padding-top:1rem;}
+.overlay-close{
+  position:absolute;top:1rem;right:1rem;background:none;border:1px solid var(--line);color:var(--ink-dim);
+  width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;
+}
+
+/* split fragment navigation */
+.split-nav{
+  display:block;max-width:640px;width:100%;margin:0 auto;
+}
+.split-shadow{
+  background:var(--panel);border:1px solid var(--line);padding:.8rem;border-radius:3px;
+  margin-bottom:1rem;cursor:pointer;transition:all .2s;opacity:.5;max-height:120px;overflow:hidden;
+}
+.split-shadow:hover{opacity:.8;border-color:var(--paired);}
+.split-shadow.prev{border-left:3px solid var(--amber-dim);}
+.split-shadow.next{border-left:3px solid var(--turq-dim);}
+.split-shadow .split-label{
+  font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.3rem;display:block;
+}
+.split-shadow p{margin:0;color:var(--ink-dim);line-height:1.3;font-size:.8rem;font-style:italic;}
+.split-center{margin:1rem 0;}
+.split-nav .fragcard{margin-bottom:0;}
+
+/* article page */
+.article-page{max-width:760px;margin:0 auto;padding:2.5rem 1.4rem;}
+.article-page .a-title{font-size:1.9rem;margin:0 0 .3rem;}
+.article-page .a-meta{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--ink-faint);margin-bottom:2rem;}
+.back-link{
+  display:inline-block;margin:1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;
+  color:var(--ink-dim);text-decoration:none;border-bottom:1px dotted var(--ink-faint);
+}
+
+/* ---------- layer 3: method ---------- */
+.method-page{max-width:720px;margin:0 auto;padding:3rem 1.4rem 5rem;}
+.method-page h2{font-size:1.8rem;margin-top:2.4rem;}
+.method-page h2:first-child{margin-top:0;}
+.method-page p{color:var(--ink-dim);}
+.method-page table{width:100%;border-collapse:collapse;margin:1rem 0;font-family:'IBM Plex Mono',monospace;font-size:.8rem;}
+.method-page th,.method-page td{border:1px solid var(--line);padding:.5rem .7rem;text-align:left;}
+.method-page th{color:var(--ink-faint);font-weight:500;}
+
+/* ---------- graph view ---------- */
+.graph-shell{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 44px);}
+.graph-controls{
+  border-right:1px solid var(--line);padding:1.2rem 1rem;overflow-y:auto;
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;
+}
+.graph-controls h4{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:1rem 0 .4rem;}
+.graph-controls h4:first-child{margin-top:0;}
+.graph-controls label{display:flex;align-items:center;gap:.4rem;padding:.2rem 0;color:var(--ink-dim);}
+.graph-controls label.disabled{color:var(--ink-faint);opacity:.6;}
+.graph-controls .hint{color:var(--ink-faint);font-size:.65rem;font-style:italic;}
+.edge-swatch{width:10px;height:3px;border-radius:1px;display:inline-block;flex-shrink:0;}
+
+.guide-panel{
+  border:1px solid var(--line);border-radius:3px;margin-bottom:1.1rem;background:var(--void-2);
+}
+.guide-panel summary{
+  cursor:pointer;padding:.55rem .7rem;color:var(--ink-dim);font-size:.7rem;letter-spacing:.03em;
+  list-style:none;display:flex;align-items:center;gap:.4rem;
+}
+.guide-panel summary::-webkit-details-marker{display:none;}
+.guide-panel summary:hover{color:var(--ink);}
+.guide-panel[open] summary{border-bottom:1px solid var(--line);color:var(--ink);}
+.guide-panel .guide-block{padding:.8rem .9rem;border-bottom:1px dashed var(--line-soft);}
+.guide-panel .guide-block:last-child{border-bottom:none;}
+.guide-panel .guide-block h4{
+  font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:.85rem;
+  text-transform:none;letter-spacing:0;color:var(--ink);margin:0 0 .4rem;
+}
+.guide-panel .guide-block p,.guide-panel .guide-block li{
+  font-family:'Newsreader',serif;font-size:.78rem;line-height:1.55;color:var(--ink-dim);
+}
+.guide-panel .guide-block ul{margin:.3rem 0;padding-left:1.1rem;}
+.guide-panel .guide-block li{margin-bottom:.35rem;}
+.guide-panel .guide-block b{color:var(--ink);font-weight:600;}
+.guide-panel .guide-block .hint{font-family:'IBM Plex Mono',monospace;font-size:.62rem;margin-top:.5rem;}
+
+#graph-guide-overlay .overlay-close{position:fixed;}
+#graph-guide-content{
+  max-width:640px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:3px;
+  padding:1.6rem 1.8rem;
+}
+#graph-guide-content h2{font-size:1.3rem;margin:0 0 1rem;}
+#graph-guide-content .guide-block{padding:1rem 0;border-bottom:1px dashed var(--line-soft);}
+#graph-guide-content .guide-block:last-child{border-bottom:none;padding-bottom:0;}
+#graph-guide-content .guide-block h4{
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--paired);margin:0 0 .5rem;
+}
+#graph-guide-content .guide-block p,#graph-guide-content .guide-block li{color:var(--ink-dim);line-height:1.65;}
+#graph-guide-content .guide-block ul{margin:.4rem 0;padding-left:1.2rem;}
+#graph-guide-content .guide-block li{margin-bottom:.5rem;}
+#graph-guide-content .guide-block b{color:var(--ink);}
+#graph-guide-content .guide-block .hint{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ink-faint);font-style:italic;}
+
+/* stepper chrome — modal only; the sidebar panel renders all steps as flat .guide-block's */
+.guide-step-count{
+  font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:.4rem;
+}
+.guide-step-body{color:var(--ink-dim);line-height:1.65;}
+.guide-step-body p{margin:0 0 .8rem;}
+.guide-step-body b{color:var(--ink);}
+.guide-step-body .hint{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ink-faint);font-style:italic;margin-top:.6rem;}
+.guide-dots{display:flex;gap:.4rem;justify-content:center;margin:1.3rem 0 1rem;}
+.guide-dot{
+  width:8px;height:8px;border-radius:50%;border:none;background:var(--line);cursor:pointer;padding:0;
+}
+.guide-dot.active{background:var(--paired);}
+.guide-dot:hover{background:var(--ink-faint);}
+.guide-nav-row{display:flex;justify-content:space-between;gap:.8rem;}
+.guide-nav-btn{
+  background:none;border:1px solid var(--line);color:var(--ink-dim);border-radius:2px;
+  padding:.5rem 1rem;cursor:pointer;font-family:inherit;font-size:.85rem;
+}
+.guide-nav-btn:hover:not(:disabled){border-color:var(--paired);color:var(--ink);}
+.guide-nav-btn:disabled{opacity:.35;cursor:default;}
+.guide-nav-btn-primary{background:var(--paired);border-color:var(--paired);color:#08070c;font-weight:600;margin-left:auto;}
+.guide-nav-btn-primary:hover{opacity:.9;border-color:var(--paired);color:#08070c;}
+
+/* demo swatches — shared by the modal steps and the sidebar's flat guide-block layout */
+.demo-row{display:flex;align-items:center;gap:1.4rem;margin:.7rem 0;}
+.demo-row.wrap{flex-wrap:wrap;row-gap:.9rem;}
+.demo-item{display:flex;flex-direction:column;align-items:center;gap:.35rem;}
+.demo-item span{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--ink-faint);white-space:nowrap;}
+.demo-node,.demo-line{display:block;}
+#keyword-swatch{background:linear-gradient(90deg,#e0a94e,#5ec9c9,#c9556b,#9b7fd4);}
+#graph-canvas-wrap{position:relative;overflow:hidden;}
+#graph-canvas-wrap svg{width:100%;height:100%;display:block;}
+/* No transition on <line> — with ~10k links animating opacity simultaneously was the
+   main cause of the click delay; the color/class swap is instant instead. Circles (only
+   ~470 of them) keep a transition since that cost is negligible at that count. */
+#graph-canvas-wrap circle{transition:opacity .18s ease;}
+#graph-canvas-wrap circle.dimmed{opacity:.12;}
+#graph-canvas-wrap line.dimmed{opacity:.05;}
+#graph-canvas-wrap line.link-active{opacity:1;stroke-width:1.6px !important;}
+#graph-canvas-wrap circle.node-selected{stroke:var(--ink);stroke-width:2.5px;}
+.compass-guides{pointer-events:none;}
+.compass-axis{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4;}
+.compass-label-bg{fill:var(--void);fill-opacity:.88;rx:2;}
+.compass-label{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  fill:var(--ink-faint);
+}
+.compass-label-center{font-size:9px;fill:var(--line);}
+.graph-side-panel{
+  position:absolute;top:0;right:0;bottom:0;width:340px;max-width:88vw;
+  background:var(--panel);border-left:1px solid var(--line);
+  padding:1.2rem;overflow-y:auto;transform:translateX(100%);transition:transform .2s ease;
+}
+.graph-side-panel.open{transform:translateX(0);}
+.node-tooltip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);padding:.4rem .6rem;font-family:'IBM Plex Mono',monospace;font-size:.68rem;border-radius:2px;z-index:50;max-width:260px;}
+
+.constellation-head{margin-bottom:1rem;}
+.constellation-head h3{font-size:1.1rem;font-style:italic;font-weight:500;margin:.2rem 0 .3rem;}
+.constellation-list{display:flex;flex-direction:column;gap:.3rem;}
+.constellation-row{
+  display:flex;align-items:center;gap:.55rem;padding:.5rem .6rem;border-radius:3px;cursor:pointer;
+  border:1px solid var(--line-soft);background:var(--void-2);
+}
+.constellation-row:hover{border-color:var(--paired);background:rgba(155,127,212,.08);}
+.constellation-row .era-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.constellation-row .row-text{font-size:.82rem;color:var(--ink-dim);line-height:1.4;}
+
+/* ---------- footer status ---------- */
+#status-footer{
+  position:sticky;bottom:0;z-index:400;
+  background:rgba(8,7,12,.92);backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--ink-faint);
+  padding:.5rem 1.2rem;text-align:center;letter-spacing:.02em;
+}
+#status-footer b{color:var(--ink-dim);font-weight:500;}
+
+.credit-footer{
+  padding:3rem 1.4rem;text-align:center;color:var(--ink-faint);
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;line-height:1.9;
+  border-top:1px solid var(--line);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .spine{grid-template-columns:1fr;}
+  .col-1999{border-right:none;border-bottom:1px solid var(--line-soft);}
+  .col-label{position:static;}
+  .close-grid{grid-template-columns:1fr;gap:1.2rem;}
+  .evidence-shell{grid-template-columns:1fr;}
+  .filters{position:static;max-height:none;border-right:none;border-bottom:1px solid var(--line);}
+  .graph-shell{grid-template-columns:1fr;height:auto;}
+  .graph-controls{border-right:none;border-bottom:1px solid var(--line);}
+  #graph-canvas-wrap{height:60vh;}
+  .result-row{grid-template-columns:1fr;gap:.3rem;}
+  .evidence-group .eg-body{padding-left:.6rem;}
+}
+@media (max-width:520px){
+  #topnav{flex-direction:column;align-items:flex-start;gap:.5rem;}
+  .prologue{padding:3.5rem 1rem 3rem;}
+}
+
+/* ---------- error / empty states ---------- */
+#fatal-error{
+  position:fixed;inset:0;background:var(--void);color:var(--demonic);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:'IBM Plex Mono',monospace;padding:2rem;z-index:9999;
+}
+.pending{color:var(--ink-faint);font-style:italic;}
+</style>
+</head>
+<body>
+
+<div id="fatal-error" style="display:none;"></div>
+
+<nav id="topnav">
+  <div class="brand">Biography of the Bubbles <span>/ NYT opinion, 1999 &amp; 2025</span></div>
+  <nav>
+    <button data-view="biography" class="active">Biography of the Bubbles</button>
+    <button data-view="evidence">Evidence</button>
+    <button data-view="graph">Connections</button>
+    <button data-view="method">Method</button>
+  </nav>
+</nav>
+
+<main id="app"></main>
+
+<footer id="status-footer"></footer>
+
+<div class="overlay" id="frag-overlay">
+  <button class="overlay-close" id="overlay-close-btn" aria-label="Close">&times;</button>
+  <div id="overlay-content"></div>
+</div>
+
+<div class="overlay" id="graph-guide-overlay">
+  <button class="overlay-close" id="graph-guide-close-btn" aria-label="Close">&times;</button>
+  <div id="graph-guide-content"></div>
+</div>
+
+<div class="diptych-tooltip" id="diptychTooltip"></div>
+<div class="diptych-panel" id="diptychPanel">
+  <div class="diptych-panel-inner">
+    <div class="diptych-panel-head">
+      <span class="diptych-panel-family mono" id="diptychPanelFamily"></span>
+      <span class="diptych-panel-motif" id="diptychPanelMotif"></span>
+      <button class="diptych-panel-close" id="diptychPanelClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="diptych-panel-cards" id="diptychPanelCards"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+'use strict';
+
+/* =========================================================================
+   0. DATA LOADING
+   ========================================================================= */
+let DATA = null;
+window.OVERLONG_QUOTATIONS = [];
+
+async function boot(){
+  try{
+    const res = await fetch('site-data.json');
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    DATA = await res.json();
+  }catch(err){
+    document.getElementById('fatal-error').style.display='flex';
+    document.getElementById('fatal-error').innerHTML =
+      '<div><p>Could not load <b>site-data.json</b>.</p>'+
+      '<p style="color:#a29dbd;font-size:.85rem;">Make sure it sits next to index.html and you are serving this over a local static server (not file://).</p>'+
+      '<p style="color:#6b6784;font-size:.75rem;">'+ (err && err.message ? err.message : err) +'</p></div>';
+    return;
+  }
+  init();
+}
+
+/* =========================================================================
+   1. ACCESSORS  (single source of truth for myth_ids shape etc.)
+   ========================================================================= */
+
+// myth_ids is an array of {narrative, subtheme, register, stance} objects — NEVER plain ids.
+function getMyths(entity){
+  return (entity && Array.isArray(entity.myth_ids)) ? entity.myth_ids : [];
+}
+
+function article(id){ return DATA.articles[id]; }
+function fragment(id){ return DATA.fragments[id]; }
+function company(id){ return DATA.companies[id]; }
+function authorLabel(id){ return (DATA.authors[id] && DATA.authors[id].label) || id; }
+function authorOf(art){ return (art && DATA.authors[art.author_id]) || null; }
+function myth(narrative){ return DATA.myths[narrative]; }
+function topicLabel(id){ return (DATA.topics[id] && DATA.topics[id].label) || id; }
+function peterLabel(id){ return (DATA.peters_stages[id] && DATA.peters_stages[id].label) || id; }
+function metaphorLabel(id){ return (DATA.metaphor_categories[id] && DATA.metaphor_categories[id].label) || id; }
+function voiceLabel(id){ return (DATA.voice_roles[id] && DATA.voice_roles[id].label) || id; }
+function metaphorEntry(id){ return DATA.metaphors[id]; }
+function keywordLabel(id){ return (DATA.keyword_vocabulary && DATA.keyword_vocabulary[id]) || id; }
+function motifLabel(id){ return (DATA.motifs && DATA.motifs[id]) || id; }
+function metaphorsOfArticle(art){ return (art.metaphor_ids||[]).map(metaphorEntry).filter(Boolean); }
+
+function allArticles(){ return Object.values(DATA.articles); }
+function allFragments(){ return Object.values(DATA.fragments); }
+
+function fragmentsOfArticle(art){
+  return (art.fragment_ids||[]).map(fragment).filter(Boolean);
+}
+
+// deterministic shuffle (mulberry32), seeded — same order every reload, not chronological
+function seededShuffle(arr, seed){
+  const out = arr.slice();
+  let s = seed;
+  function rnd(){ s|=0; s=s+0x6D2B79F5|0; let t=Math.imul(s^s>>>15,1|s); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }
+  for(let i=out.length-1;i>0;i--){
+    const j = Math.floor(rnd()*(i+1));
+    [out[i],out[j]]=[out[j],out[i]];
+  }
+  return out;
+}
+const CHAPTER_SEED = 20260729;
+
+/* subthemes collected at runtime from fragment myth_ids */
+function collectSubthemes(){
+  const set = new Set();
+  allFragments().forEach(f => getMyths(f).forEach(m => { if(m.subtheme) set.add(m.subtheme); }));
+  return Array.from(set).sort();
+}
+
+/* biography chapters — which articles feed the 16 highlight pairs, an article's
+   lead myth register (for the reckoning lens), and myth-narrative presence checks
+   (for the border/mind lenses) */
+function highlightPairArticleIds(){
+  const ids = new Set();
+  (DATA.highlight_pairs||[]).forEach(p=>{
+    const fa = fragment(p.a), fb = fragment(p.b);
+    if(fa) ids.add(fa.article_id);
+    if(fb) ids.add(fb.article_id);
+  });
+  return ids;
+}
+
+function articleRegister(art){
+  const myths = getMyths(art);
+  if(!myths.length) return null;
+  return myths[0].stance === 'deflated' ? 'deflated' : myths[0].register;
+}
+
+function articleHasMyth(art, narrative){
+  return getMyths(art).some(m => m.narrative === narrative);
+}
+
+/* =========================================================================
+   2. CODING STATUS FOOTER
+   ========================================================================= */
+function renderStatusFooter(){
+  document.getElementById('status-footer').innerHTML =
+    `Janyne Leonardi de Carvalho &middot; MA Digital Innovation in Journalism Studies, Concordia University`;
+}
+
+/* =========================================================================
+   3. REGISTER BADGE + FRAGMENT CARD RENDERING
+   ========================================================================= */
+function registerBadgeHTML(m){
+  // m: {narrative, subtheme, register, stance}
+  const stance = m.stance;
+  const reg = m.register; // sublime|demonic|paired|null
+  const cls = stance === 'deflated' ? 'reg-deflated' : ('reg-'+(reg||'unknown'));
+  const mythLbl = (myth(m.narrative)||{}).label || m.narrative;
+  const stanceLbl = stance === 'deflated' ? 'Deflated' : 'Carried';
+  const regLbl = stance === 'deflated' ? 'no transcendence claimed' : (DATA.registers[reg]||{}).label || reg;
+  return `<span class="regbadge ${cls}" title="${mythLbl} — ${stanceLbl}">
+    ${mythLbl} &middot; ${regLbl}
+    ${m.subtheme ? `<span class="subtheme">/ ${escapeHTML(m.subtheme)}</span>` : ''}
+  </span>`;
+}
+
+function escapeHTML(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+let fragCardCounter = 0;
+function fragmentCardHTML(f, opts){
+  opts = opts||{};
+  const art = article(f.article_id);
+  const myths = getMyths(f);
+  const isLong = f.quotation && f.quotation.length > 1200;
+  if(isLong && window.OVERLONG_QUOTATIONS.indexOf(f.id) === -1) window.OVERLONG_QUOTATIONS.push(f.id);
+  const uid = 'fc'+(fragCardCounter++);
+
+  const badges = myths.map(registerBadgeHTML).join(' ');
+
+  const metaBits = [];
+  if(art){
+    const articleMyths = getMyths(art);
+    const articleMythBadges = articleMyths.map(registerBadgeHTML).join('');
+    metaBits.push(`<a href="#article/${art.id}" data-nav-article="${art.id}">${escapeHTML(art.title)}</a>${articleMythBadges ? `<span class="meta-article-myths">${articleMythBadges}</span>` : ''}`);
+    metaBits.push(escapeHTML(authorLabel(art.author_id)));
+    metaBits.push('The New York Times');
+    metaBits.push(escapeHTML(art.date||art.year));
+  }
+
+  const splitBadge = f.split_from ? `<span class="badge-split" data-split-from="${escapeHTML(f.split_from)}">split from ${escapeHTML(f.split_from)}</span>` : '';
+
+  const kwChips = (f.keywords||[]).map(kid=>
+    `<a class="chip-keyword" href="#evidence?keyword=${encodeURIComponent(kid)}" data-nav-keyword="${escapeHTML(kid)}" title="${escapeHTML(kid)}">${escapeHTML(keywordLabel(kid))}</a>`
+  ).join('');
+
+  if(opts.compact){
+    return `<article class="fragcard fragcard-compact" data-frag-id="${f.id}" data-open-frag="${f.id}" tabindex="0" role="button" aria-label="Read full fragment">
+      ${f.primary_subject ? `<div class="subject">${escapeHTML(f.primary_subject)}</div>` : ''}
+      <p class="quote truncated" id="${uid}">${escapeHTML(f.quotation)}</p>
+      <div class="meta">${metaBits.join(' &middot; ')}</div>
+    </article>`;
+  }
+
+  return `<article class="fragcard" data-frag-id="${f.id}">
+    ${badges ? `<div>${badges}</div>` : ''}
+    ${splitBadge}
+    ${f.primary_subject ? `<div class="subject">${escapeHTML(f.primary_subject)}</div>` : ''}
+    <p class="quote ${isLong?'truncated':''}" id="${uid}">${escapeHTML(f.quotation)}</p>
+    ${isLong ? `<button class="expand-btn" data-expand="${uid}">Expand full quotation</button>` : ''}
+    ${f.synopsis ? `<p class="synopsis">${escapeHTML(f.synopsis)}</p>` : ''}
+    ${f.article_context ? `<details><summary>Article context</summary><p>${escapeHTML(f.article_context)}</p></details>` : ''}
+    ${kwChips ? `<div class="chip-row">${kwChips}</div>` : ''}
+    <div class="meta">${metaBits.join(' &middot; ')}</div>
+  </article>`;
+}
+
+function wireFragmentCardInteractions(root){
+  root.querySelectorAll('[data-expand]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const el = document.getElementById(btn.getAttribute('data-expand'));
+      el.classList.remove('truncated');
+      btn.remove();
+    });
+  });
+  root.querySelectorAll('[data-nav-article]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation(); // don't also trigger the enclosing compact card's open-overlay handler
+      navigateTo('article', {id:a.getAttribute('data-nav-article')});
+    });
+  });
+  root.querySelectorAll('[data-split-from]').forEach(badge=>{
+    badge.addEventListener('click', ()=>{
+      // navigate to the parent fragment or show all siblings
+      const parentId = badge.getAttribute('data-split-from');
+      const f = fragment(parentId);
+      if(f) openFragmentOverlay(parentId);
+    });
+  });
+  root.querySelectorAll('.fragcard-compact[data-open-frag]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      openFragmentOverlay(card.getAttribute('data-open-frag'));
+    });
+    card.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openFragmentOverlay(card.getAttribute('data-open-frag')); }
+    });
+  });
+}
+
+/* =========================================================================
+   4. MARGINALIA  (still used by the Metaphors section's BUBBLE_INTERLUDE below)
+   ========================================================================= */
+function marginaliaHTML(m){
+  if(m.empty){
+    return `<div class="marginalia empty-slot"><div class="m-eyebrow">${m.eyebrow}</div>${m.build()}</div>`;
+  }
+  return `<div class="marginalia"><div class="m-eyebrow">${m.eyebrow}</div><h3>${m.title}</h3>${m.build()}</div>`;
+}
+
+/* =========================================================================
+   5. LAYER 1 — BIOGRAPHY (fragment pairs + metaphors)
+   ========================================================================= */
+
+// The 16 curated cross-era pairs (DATA.highlight_pairs)
+// — each pair links one 1999 fragment and one 2025 fragment around a shared motif. Rendered
+// one pair at a time (a slide), not all 16 at once.
+function pairSlideHTML(pair, index, total){
+  const fa = fragment(pair.a), fb = fragment(pair.b);
+  if(!fa || !fb) return '';
+  return `<div class="pair-slide" data-pair-index="${index}" ${index===0?'':'style="display:none"'}>
+    <div class="pair-slide-head">
+      <span class="pair-count">Pair ${index+1} of ${total}</span>
+      ${pair.motif ? `<span class="pair-motif">${escapeHTML(motifLabel(pair.motif))}</span>` : ''}
+    </div>
+    <div class="spine pair-spine">
+      <div class="col col-1999">
+        <div class="col-label">1999</div>
+        ${fragmentCardHTML(fa)}
+      </div>
+      <div class="col col-2025">
+        <div class="col-label">2025</div>
+        ${fragmentCardHTML(fb)}
+      </div>
+    </div>
+  </div>`;
+}
+
+function pairCarouselHTML(){
+  const pairs = (DATA.highlight_pairs||[]);
+  if(!pairs.length) return '<p class="pending">No highlight pairs coded yet.</p>';
+  const slides = pairs.map((p,i)=>pairSlideHTML(p,i,pairs.length)).join('');
+  const dots = pairs.map((_,i)=>`<button class="pair-dot ${i===0?'active':''}" data-pair-goto="${i}" aria-label="Pair ${i+1}"></button>`).join('');
+  return `<div class="pair-carousel" data-pair-total="${pairs.length}">
+    ${slides}
+    <div class="pair-nav-row">
+      <button class="pair-nav-btn" id="pair-prev-btn" aria-label="Previous pair">&larr;</button>
+      <div class="pair-dots">${dots}</div>
+      <button class="pair-nav-btn" id="pair-next-btn" aria-label="Next pair">&rarr;</button>
+    </div>
+  </div>`;
+}
+
+function wirePairCarousel(root){
+  const carousel = root.querySelector('.pair-carousel');
+  if(!carousel) return;
+  const total = +carousel.getAttribute('data-pair-total');
+  let current = 0;
+  const slides = carousel.querySelectorAll('.pair-slide');
+  const dots = carousel.querySelectorAll('.pair-dot');
+  function show(i){
+    current = ((i % total) + total) % total;
+    slides.forEach((s,idx)=>{ s.style.display = idx===current ? '' : 'none'; });
+    dots.forEach((d,idx)=>d.classList.toggle('active', idx===current));
+  }
+  carousel.querySelector('#pair-prev-btn').addEventListener('click', ()=> show(current-1));
+  carousel.querySelector('#pair-next-btn').addEventListener('click', ()=> show(current+1));
+  dots.forEach(d=>{
+    d.addEventListener('click', ()=> show(+d.getAttribute('data-pair-goto')));
+  });
+  // arrow-key navigation, scoped to when the carousel is actually in view — a plain
+  // document-level listener would also fire while the reader is scrolling elsewhere,
+  // which would be a confusing surprise.
+  document.addEventListener('keydown', (e)=>{
+    if(!carousel.isConnected) return;
+    const rect = carousel.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if(!inView) return;
+    if(e.key==='ArrowLeft') show(current-1);
+    if(e.key==='ArrowRight') show(current+1);
+  });
+}
+
+/* =========================================================================
+   5b. CHAPTER 1 (current) — seven scroll-triggered chapters sharing one
+   persistent 92-article "macro layer" bubble canvas, each chapter recoloring
+   or regrouping that same canvas plus two metaphor declarations that glide
+   in as text overlays. Chapter 7 tears the macro layer down and narrows the
+   corpus into the Correspondences grid (fragment-pairs view) as the climax.
+   ========================================================================= */
+
+const CHAPTERS = [
+  { id:'mundane',    title:'The Mundane',
+    decl:{ a:null, b:null } }, // baseline chapter, no declaration — establishes the canvas itself
+  { id:'market',     title:'The Market',
+    decl:{ a:'I am the dot-com bubble', b:"I am the A.I. bubble that swears it's different" } },
+  { id:'border',     title:'The Border',
+    decl:{ a:'I am the information superhighway', b:'I am the A.I. train' } },
+  { id:'rules',      title:'The Rules',
+    decl:{ a:'I am the hand that squelches the Net', b:'I am the hand that pries into your systems' } },
+  { id:'mind',       title:'The Mind',
+    decl:{ a:'I am the internet that routes around you', b:'I am the silicon species' } },
+  { id:'denial',     title:'The Denial',
+    decl:{ a:null, b:null } },
+  { id:'future',     title:'Made up versions of the future',
+    decl:{ a:null, b:null } },
+  { id:'diptych',    title:'The Diptych',
+    // No declaration for this chapter — it closes into the Correspondences
+    // grid itself rather than a metaphor-voice statement.
+    decl:{ a:null, b:null } },
+];
+
+const CHAPTER_MICRO_FRAGMENTS = {
+  mundane: ['1999-035-F1a', '2025-229-F2'],   // Great Campus Goof-Off Machine / An A.I. Developer's Advice to Parents
+  market:  ['1999-009-F2',  '2025-225-F1'],   // We're All One River / A.I. Is a Bubble. Maybe That's OK.
+  border:  ['1999-149-F1',  '2025-217-F2'],   // Honey, I Shrunk the World / Welcome to a New Era
+  rules:   ['1999-047-F1',  '2025-152-F2'],   // Settling the Microsoft Case / The Era of A.I. Propaganda
+  mind:    ['1999-191-F4',  '2025-151-F1'],   // The Next Big Dialectic / ChatGPT Changed My Inner World
+  denial:  ['1999-114-F1',  '2025-168-F1'],   // Let's Not Get Too Wired / The Fever Dream of Imminent Superintelligence
+  future:  ['1999-166-F2',  '2025-183-F1'],   // Reality Bytes / We're All Going to Die -- Soonish!
+  // 'diptych' intentionally absent — its micro content is the grid itself, mounted separately
+};
+
+function renderChapterMicroHTML(chapterId){
+  const ids = CHAPTER_MICRO_FRAGMENTS[chapterId];
+  if(!ids) return '';
+  const cols = ids.map(fid => {
+    const f = fragment(fid);
+    if(!f) return '';
+    const art = article(f.article_id);
+    const yr = art ? art.year : '';
+    return `<div class="col ${yr==='1999'?'col-1999':'col-2025'}">
+      <div class="col-label">${escapeHTML(yr)}</div>
+      ${fragmentCardHTML(f, {compact:true})}
+    </div>`;
+  }).join('');
+  return `<div class="spine chapter-micro-spine">${cols}</div>`;
+}
+
+function renderChapters(){
+  const sections = CHAPTERS.map((ch,i) => `
+    <section class="chapter-section${ch.id==='diptych' ? ' chapter-section--overflow' : ''}" id="chapter-${ch.id}" data-chapter="${ch.id}">
+      <div class="declaration-pair" data-decl-for="${ch.id}">
+        ${ch.decl.a ? `<span class="declaration a" data-decl-side="a">${escapeHTML(ch.decl.a)}</span>` : ''}
+        ${ch.decl.b ? `<span class="declaration b" data-decl-side="b">${escapeHTML(ch.decl.b)}</span>` : ''}
+      </div>
+      <div class="chapter-head">
+        ${ch.decl.a ? `<span class="declaration-flank a" data-decl-flank-for="${ch.id}" data-decl-side="a">${escapeHTML(ch.decl.a)}</span>` : ''}
+        <div class="eyebrow">Chapter ${i+1}</div>
+        <h2>${escapeHTML(ch.title)}</h2>
+        ${ch.decl.b ? `<span class="declaration-flank b" data-decl-flank-for="${ch.id}" data-decl-side="b">${escapeHTML(ch.decl.b)}</span>` : ''}
+      </div>
+      <div class="chapter-prose">
+        <!-- TODO: chapter prose, narrator voice. Lorem ipsum placeholder, matches
+             the rest of this document's unwritten sections. -->
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </div>
+      <div class="chapter-micro" data-chapter-micro="${ch.id}">
+        ${ch.id === 'diptych' ? '' : renderChapterMicroHTML(ch.id)}
+      </div>
+    </section>`).join('');
+
+  return `<div class="chapters">
+    <div class="macro-stage"><svg id="macroSvg"></svg></div>
+    ${sections}
+  </div>`;
+}
+
+/* the macro bubble layer — 92 articles, one persistent force simulation that
+   recolors/regroups per chapter instead of re-rendering */
+function wireMacroLayer(root){
+  const svg = d3.select(root.querySelector('#macroSvg'));
+  if(svg.empty() || typeof d3 === 'undefined') return null;
+
+  const bbox = root.querySelector('.macro-stage').getBoundingClientRect();
+  const W = bbox.width, H = bbox.height;
+  const pairArticleIds = highlightPairArticleIds();
+
+  // stable pseudo-random baseline scatter, seeded per article id so it's
+  // consistent across re-renders rather than reshuffling on every mount.
+  // The trailing avalanche mix matters: a plain polynomial hash makes
+  // seededRand(id+'x') and seededRand(id+'y') land within ~0.001 of each
+  // other (their inputs differ only in the last char code, 'x' vs 'y' = 1),
+  // which collapsed the whole scatter onto a visible diagonal line.
+  function seededRand(str){
+    let h = 0; for(let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) >>> 0;
+    h ^= h >>> 16; h = Math.imul(h, 0x45d9f3b);
+    h ^= h >>> 16; h = Math.imul(h, 0x45d9f3b);
+    h ^= h >>> 16;
+    return ((h >>> 0) % 1000)/1000;
+  }
+
+  const nodes = allArticles().map(a => {
+    const rx = seededRand(a.id+'x'), ry = seededRand(a.id+'y');
+    return {
+      id:a.id, year:String(a.year), peters:a.peters_primary,
+      register: articleRegister(a),
+      hasEog: articleHasMyth(a,'eog'), hasEhum: articleHasMyth(a,'ehum'),
+      inPairs: pairArticleIds.has(a.id),
+      baseX: W*0.15 + rx*W*0.7, baseY: H*0.2 + ry*H*0.6,
+      x: W/2, y: H/2,
+    };
+  });
+
+  const PETERS_COL = { economic: W*0.22, legal: W*0.5, cultural: W*0.78, unclear: W*0.5 };
+  const REG_COLOR = { sublime:'var(--sublime)', demonic:'var(--demonic)', paired:'var(--paired)', deflated:'var(--deflated)' };
+
+  let lens = 'mundane';
+
+  function targetX(d){
+    if(lens==='market' || lens==='rules') return PETERS_COL[d.peters] ?? W/2;
+    return d.baseX;
+  }
+  function targetY(d){
+    if(lens==='market') return d.peters==='economic' ? (d.year==='1999'?H*0.32:H*0.68) : H/2;
+    if(lens==='rules')  return d.peters==='legal'     ? (d.year==='1999'?H*0.32:H*0.68) : H/2;
+    return d.baseY;
+  }
+  function nodeOpacity(d){
+    if(lens==='market') return d.peters==='economic' ? 1 : 0.15;
+    if(lens==='rules')  return d.peters==='legal' ? 1 : 0.15;
+    if(lens==='border') return d.hasEog ? 1 : 0.12;
+    if(lens==='mind')   return d.hasEhum ? 1 : 0.12;
+    if(lens==='denial') return d.register ? 1 : 0.2;
+    return 0.85; // mundane baseline
+  }
+  function nodeColor(d){
+    if(lens==='denial' && d.register) return REG_COLOR[d.register];
+    return d.year==='1999' ? 'var(--amber)' : 'var(--turq)';
+  }
+
+  // forceX/forceY bake their per-node target into an internal array the first time
+  // the force is initialized (on forceSimulation() or force.initialize()) — they do
+  // NOT re-call targetX/targetY on every tick. Without re-initializing these two
+  // forces on every lens change, switching `lens` silently has no effect on layout:
+  // the sim keeps pulling nodes toward whichever targets were computed for the very
+  // first lens ('mundane'), no matter what setLens() is called with afterward.
+  const forceX = d3.forceX(targetX).strength(0.12);
+  const forceY = d3.forceY(targetY).strength(0.12);
+
+  const sim = d3.forceSimulation(nodes)
+    .force('x', forceX)
+    .force('y', forceY)
+    .force('collide', d3.forceCollide(6))
+    .force('charge', d3.forceManyBody().strength(-3))
+    .on('tick', ticked);
+
+  // `sel` is reassigned by restore() after teardown() empties the <svg> — ticked()
+  // and setLens() always need the current join, not whatever was bound at mount time.
+  let sel = svg.selectAll('g.macro-node').data(nodes, d=>d.id).join('g').attr('class','macro-node');
+  sel.append('circle').attr('r', 4.5);
+
+  function ticked(){
+    sel.attr('transform', d=>`translate(${d.x},${d.y})`);
+    sel.select('circle')
+      .attr('fill', nodeColor)
+      .attr('opacity', nodeOpacity);
+  }
+
+  function setLens(name){
+    lens = name;
+    forceX.initialize(nodes, Math.random);
+    forceY.initialize(nodes, Math.random);
+    sim.alpha(0.9).restart();
+  }
+
+  // Chapter 7 tears the canvas down once its Correspondences grid mounts, but a
+  // reader who then scrolls back up above Chapter 7 needs the bubbles back — without
+  // this, the macro layer is gone for the rest of the session and Chapters 1-6 read
+  // as permanently broken/empty. restore() re-creates the join and resumes the sim;
+  // wireChapterScroll() calls it whenever the reader re-enters the pre-hinge chapters.
+  function teardown(onDone){
+    sel.transition().duration(600).attr('opacity',0).on('end', function(){ d3.select(this).remove(); });
+    sim.stop();
+    if(onDone) setTimeout(onDone, 650);
+  }
+
+  function restore(){
+    sel = svg.selectAll('g.macro-node').data(nodes, d=>d.id).join('g').attr('class','macro-node');
+    sel.append('circle').attr('r', 4.5).attr('opacity', 0);
+    forceX.initialize(nodes, Math.random);
+    forceY.initialize(nodes, Math.random);
+    sim.alpha(0.9).restart();
+  }
+
+  return { setLens, teardown, restore };
+}
+
+/* metaphor declaration staging — glide in centered on chapter entry, hold,
+   fade out, then hand off to a small badge flanking the chapter title
+   (stays visible until the next chapter re-triggers) */
+function wireDeclarations(root){
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const activeTimers = new Map();
+
+  function play(chapterId){
+    const wrap = root.querySelector(`[data-decl-for="${chapterId}"]`);
+    const flanks = root.querySelectorAll(`[data-decl-flank-for="${chapterId}"]`);
+    if(!wrap) return;
+    clearTimeout(activeTimers.get(chapterId));
+    const spans = wrap.querySelectorAll('.declaration');
+    flanks.forEach(f => f.classList.remove('show'));
+    spans.forEach(s => { s.classList.remove('badge'); s.classList.add('show'); });
+    const t = setTimeout(()=>{
+      spans.forEach(s => s.classList.remove('show')); // fade the centered version out
+      flanks.forEach(f => f.classList.add('show'));   // hand off to the title-flanking badge
+    }, reduced ? 200 : 2600);
+    activeTimers.set(chapterId, t);
+  }
+
+  return { play };
+}
+
+/* scroll wiring — connects chapters to the macro layer + declarations +
+   Chapter 7's absorption into the Correspondences grid. The hinge transition is
+   reversible: scrolling past it tears the bubbles down once (the grid is built
+   once and never re-rendered), but scrolling back up above it restores them, and
+   scrolling back down to the hinge tears them down again — otherwise a reader who
+   reaches the climax and then scrolls back up finds Chapters 1-6 permanently empty. */
+function wireChapterScroll(root){
+  const macro = wireMacroLayer(root);
+  const decl = wireDeclarations(root);
+  if(!macro) return;
+
+  let gridBuilt = false;
+  let torn = false;
+
+  // threshold lowered from the natural "half the section is visible" reading:
+  // that fraction is of the target's OWN box, and .chapter-section--overflow
+  // (Diptych) can be well over one viewport tall, so requiring 50% of its own
+  // height to be on-screen either fires very late or, on short viewports,
+  // might not reliably fire at all. 0.25 still means "meaningfully scrolled
+  // into this chapter," not just a sliver, and works for both box sizes.
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting || entry.intersectionRatio < 0.25) return;
+      const chapterId = entry.target.getAttribute('data-chapter');
+
+      if(chapterId === 'diptych'){
+        if(torn) return;
+        torn = true;
+        decl.play('diptych');
+        macro.teardown(()=>{
+          if(gridBuilt) return;
+          gridBuilt = true;
+          const mount = entry.target.querySelector('[data-chapter-micro="diptych"]');
+          if(mount) mount.innerHTML = renderCorrespondenceGrid();
+          wireCorrespondenceGrid(entry.target);
+        });
+        return;
+      }
+
+      if(torn){
+        torn = false;
+        macro.restore();
+      }
+      macro.setLens(chapterId);
+      decl.play(chapterId);
+    });
+  }, { threshold: [0.25] });
+
+  root.querySelectorAll('.chapter-section').forEach(sec => observer.observe(sec));
+}
+
+/* ---------- Chapter 7 content: the Correspondences grid ----------
+   32 fragment-bubbles across the 16 curated highlight pairs. Clicking (or
+   keyboard-activating) a cell highlights its partner and reveals both
+   fragments plus the pair's motif/echo note below the grid; clicking again,
+   or clicking empty grid space, clears the selection. */
+/* Hand-curated snapshot mirroring DATA.highlight_pairs (same 16 pairs, same
+   order/fragment ids) but denormalized with full quote text, author/title,
+   family display labels, and hand-picked <mark> highlight substrings — none
+   of which live in site-data.json. Ported as-is from the standalone
+   Correspondences prototype rather than re-derived, to keep the curated
+   highlight marks and family labels intact. */
+const DIPTYCH_PAIRS = [{"family": "ungoverned_network", "familyLabel": "Ungoverned Network", "motifLabel": "\"Everyone connected, no one in charge\"", "echo": "a mesma constatação -- \"conectados mas sem ninguém no comando\" -- é celebrada como democracia sem constituição em 1999 e citada como razão de pânico regulatório em 2025", "a": {"id": "1999-058-F1", "year": "1999", "title": "Judgment Not Included", "author": "Thomas L. Friedman", "quote": "But precisely because the Internet is such a neutral, free, open and unregulated technology it means that we are all connected, but no one is in charge. The Internet is democracy, but with no constitution.", "highlights": ["we are all connected, but no one is in charge"]}, "b": {"id": "2025-166-F2", "year": "2025", "title": "Why the U.S. and China Should Collaborate, Not Compete, on A.I.", "author": "Thomas L. Friedman", "quote": "First: Only A.I. can regulate A.I. Sorry, humans -- this race is already moving too fast, scaling too widely and mutating too unpredictably for human analog-era oversight.", "highlights": ["Only A.I. can regulate A.I."]}}, {"family": "ungoverned_network", "familyLabel": "Ungoverned Network", "motifLabel": "\"Everyone connected, no one in charge\"", "echo": "os 'Little Brothers' sem supervisão de 1999 reaparecem como o 'attack surface do ciberespaço, onde todos estão conectados mas ninguém está no comando' que Putin explora contra o Ocidente", "a": {"id": "1999-156-F2", "year": "1999", "title": "Little Brother", "author": "Thomas L. Friedman", "quote": "Rule No. 1 of the Internet is this: We are all connected, but nobody's in charge. That is, the Internet is Orwellian in its reach, but there's no Big Brother. Instead of Big Brother, there are a lot of Little Brothers.", "highlights": ["We are all connected, but nobody's in charge."]}, "b": {"id": "2025-217-F1", "year": "2025", "title": "Welcome to a New Era. What Do We Call It?", "author": "Thomas L. Friedman", "quote": "Vladimir Putin is fighting Ukraine on the attack surface of Ukrainian territory, and at the same time, he's fighting Western Europe using the attack surface of cyberspace, where everyone is connected but no one is in charge.", "highlights": ["everyone is connected but no one is in charge"]}}, {"family": "windfall_and_envy", "familyLabel": "Windfall & Envy", "motifLabel": "Fear of missing out as investment rationale", "echo": "o dentista que ficou milionário com a AOL numa mesa de almoço em 1999 reaparece, despersonalizado, como o 'medo de ficar para trás' que os analistas de 2025 apontam como viés sistemático dos investidores em IA", "a": {"id": "1999-085-F1", "year": "1999", "title": "I'm Wall Street's Worst Nightmare", "author": "Mark Katz", "quote": "It happened one day at lunch, when my friend Paul quietly revealed to me that, three years after investing his pension by himself, he had made a million dollars on America Online. A million!", "highlights": ["he had made a million dollars on America Online"]}, "b": {"id": "2025-225-F11", "year": "2025", "title": "A.I. Is a Bubble. Maybe That's OK.", "author": "Mohamed A. El-Erian", "quote": "With such big payoffs, the incentives to invest in A.I. are enormous, and are reinforced by two biases: Investors believe that falling behind is far more damaging than over-investing, and they fear that they're missing out.", "highlights": ["they fear that they're missing out"]}}, {"family": "confession_and_correction", "familyLabel": "Confession & Correction", "motifLabel": "A named skeptic is proven wrong on the record", "echo": "Friedman gritando 'YOU'RE WRONG' aos céticos do pequeno concorrente de Amazon ecoa, invertido, em Altman chamando Gary Marcus de 'cético medíocre' -- e depois sendo o próprio Altman quem errou", "a": {"id": "1999-032-F3b", "year": "1999", "title": "KillingGoliath.com", "author": "Thomas L. Friedman", "quote": "Well, to all of you I say: YOU'RE WRONG.", "highlights": ["YOU'RE WRONG."]}, "b": {"id": "2025-168-F4b", "year": "2025", "title": "The Fever Dream of Imminent Superintelligence Is Finally Breaking", "author": "Gary Marcus", "quote": "Mr. Altman ridiculed me as a ''mediocre deep learning skeptic'' and last year claimed ''there is no wall.'' It now seems I was right.", "highlights": ["ridiculed me as a ''mediocre deep learning skeptic''", "It now seems I was right"]}}, {"family": "smart_person_undone", "familyLabel": "Smart Person Undone", "motifLabel": "A recognized genius falls for the mania anyway", "echo": "Newton perdendo fortuna na bolha dos Mares do Sul apesar de calcular 'os movimentos dos corpos celestes' ecoa em executivos de IA apostando tudo na hipótese de scaling, hoje tratada como não comprovada", "a": {"id": "1999-020-F3b", "year": "1999", "title": "Is That a Bubble, or Is the Outlook Fabulous?", "author": "Floyd Norris", "quote": "In 1720 Sir Isaac Newton, a very smart person, invested in the South Sea Company, whose dreams of profiting from exploration made it into a classic bubble. Realizing prices had gone crazy, he sold at a profit, explaining, ''I can calculate the motions of heavenly bodies, but not the madness of people.''", "highlights": ["I can calculate the motions of heavenly bodies, but not the madness of people"]}, "b": {"id": "2025-168-F4a", "year": "2025", "title": "The Fever Dream of Imminent Superintelligence Is Finally Breaking", "author": "Gary Marcus", "quote": "Fundamentally, people like Mr. Altman, the Anthropic chief executive Dario Amodei and countless other tech leaders and investors had put far too much faith into a speculative and unproven hypothesis called scaling.", "highlights": ["put far too much faith into a speculative and unproven hypothesis called scaling"]}}, {"family": "human_machine_boundary", "familyLabel": "Human / Machine Boundary", "motifLabel": "Calling the technology a new species, not a tool", "echo": "a previsão de Friedman de 1999 de que computadores 'sentientes' provocariam disputas políticas como as dos direitos civis reaparece literalmente na citação de Mundie sobre o nascimento de 'uma nova espécie -- a máquina superinteligente'", "a": {"id": "1999-191-F4", "year": "1999", "title": "The Next Big Dialectic", "author": "Kurt Andersen", "quote": "The great new philosophical and political schism of the 21st century will concern computers and their status as creatures rather than machines.", "highlights": ["status as creatures rather than machines"]}, "b": {"id": "2025-166-F4a", "year": "2025", "title": "Why the U.S. and China Should Collaborate, Not Compete, on A.I.", "author": "Thomas L. Friedman", "quote": "''A.I. is the first new tool that we will use to amplify our cognitive capabilities that -- by itself -- will also be able to vastly exceed them,'' Mundie notes. We are going to find that we have not merely birthed a new tool, but a new species -- the superintelligent machine.", "highlights": ["not merely birthed a new tool, but a new species"]}}, {"family": "child_as_disruptor", "familyLabel": "Child as Disruptor", "motifLabel": "A child's question undercuts the adult argument", "echo": "o diálogo imaginado por Friedman com 'os estudantes do futuro' em 1999 é respondido literalmente por uma adolescente real de 2025 que pesquisou 430 colegas e descreve os chatbots como 'falar com uma parede'", "a": {"id": "1999-092-F1", "year": "1999", "title": "No Computer Can Hold the Past", "author": "Robert Darnton", "quote": "''Where do you find history?'' I imagine asking the students of the future. ''On the Web,'' they answer. ''How do you get at it?'' ''By surfing.''", "highlights": ["I imagine asking the students of the future"]}, "b": {"id": "2025-127-F3", "year": "2025", "title": "Who's Afraid of ChatGPT Barbie?", "author": "Jessica Grose", "quote": "The Silicon Valley ethos of ''move fast and break things'' is not a good motto when those things are children's developing minds.", "highlights": ["move fast and break things", "children's developing minds"]}}, {"family": "child_as_disruptor", "familyLabel": "Child as Disruptor", "motifLabel": "A child's question undercuts the adult argument", "echo": "a filha que manda o pai 'ficar no escritório' em vez de trazer o celular para casa ecoa na preocupação do pai de 2025 sobre os colegas e mentores do filho serem substituídos por 'companheiros automatizados'", "a": {"id": "1999-123-F2", "year": "1999", "title": "The Y2K Social Disease", "author": "Thomas L. Friedman", "quote": "He often came home early, and on weekends, with his cell phone and tried to work at home to be with his teen-age daughter. His daughter disagreed. She eventually got so upset with all the interruptions that she finally said to him, ''Dad, just stay at the office.''", "highlights": ["Dad, just stay at the office."]}, "b": {"id": "2025-229-F3", "year": "2025", "title": "An A.I. Developer's Advice to Parents", "author": "Soulaiman Itani", "quote": "I further worry about the social effects of A.I. on them, when a child's peers and mentors are no longer just their classmates and teachers, but also automated companions and perfectly engineered online personas.", "highlights": ["peers and mentors are no longer just their classmates and teachers, but also automated companions"]}}, {"family": "displaced_and_replaced", "familyLabel": "Displaced & Replaced", "motifLabel": "A tiny home operation undercuts a giant", "echo": "Lyle Bowlin batendo a Amazon do quarto de casa com $150/mês é o espelho invertido do copywriter de 2025 substituído pela mesma tecnologia que ele usava para ganhar a vida", "a": {"id": "1999-029-F1", "year": "1999", "title": "Amazon.you", "author": "Thomas L. Friedman", "quote": "A single Iowa family, headed by Lyle Bowlin, is re-creating Amazon.com in a spare bedroom -- to underscore just how easy it is to compete against Amazon.com.", "highlights": ["re-creating Amazon.com in a spare bedroom"]}, "b": {"id": "2025-245-F1", "year": "2025", "title": "When A.I. Took My Job, I Bought a Chain Saw", "author": "Brian Groh", "quote": "I had hired a woman in the Philippines to do transcription work, but once A.I. proved just as capable, I began using the transcriptionist less often, then not at all. When my own work was being replaced, though, I felt shocked and ashamed.", "highlights": ["When my own work was being replaced, though, I felt shocked and ashamed"]}}, {"family": "invented_or_fictional_artifact", "familyLabel": "Invented / Fictional Artifact", "motifLabel": "Inventing a fictional site, product, or letter", "echo": "o pitch fictício e satírico de vender notas de $100 por $95 em 1999 dá lugar, em 2025, a um chatbot real dando ao autor um conselho verídico e literal (\"corte árvores\") que soa tão absurdo quanto qualquer paródia antiga", "a": {"id": "1999-016-F1c", "year": "1999", "title": "So Lucrative That It's Almost Profitable", "author": "Neal A. Masia", "quote": "My idea is this: a site that sells $100 bills for $95. The losses are manageable -- and think of the revenue!", "highlights": ["a site that sells $100 bills for $95"]}, "b": {"id": "2025-245-F3d", "year": "2025", "title": "When A.I. Took My Job, I Bought a Chain Saw", "author": "Brian Groh", "quote": "''Yes,'' the bot wrote. ''Based on your situation, skills and urgent need for income, tree work sales is almost certainly your fastest path to real money.''", "highlights": ["tree work sales is almost certainly your fastest path to real money"]}}, {"family": "ungoverned_network", "familyLabel": "Ungoverned Network", "motifLabel": "Someone insists the architecture was a choice, not fate", "echo": "\"a Internet interpreta a censura como dano e a contorna\" -- crença de que a rede resiste sozinha ao controle -- inverte-se na constatação de 2025 de que a dominância da IA 'pode parecer inevitável' mas é produto de escolha humana, não lei natural", "a": {"id": "1999-179-F9", "year": "1999", "title": "What Really Scares Microsoft", "author": "Virginia Postrel", "quote": "There's a popular saying in the technology world that the Internet interprets censorship as damage and ''routes around it.'' Desire and innovation will trump policy, the argument goes.", "highlights": ["the Internet interprets censorship as damage and ''routes around it.''"]}, "b": {"id": "2025-239-F10", "year": "2025", "title": "The Starving Artist vs. the Machine", "author": "Caitlin Petre and Julia Ticona", "quote": "It can seem inevitable that A.I. will rewrite the future of the arts -- a natural consequence of the tools' technical and economic momentum. But the impacts of technological change are always shaped by human action.", "highlights": ["always shaped by human action"]}}, {"family": null, "familyLabel": "Other Cross-Era Echoes", "motifLabel": null, "echo": "o aviso de 1999 de que a Internet aumentaria o consumo de energia (contra a promessa de Al Gore) ecoa diretamente no argumento de 2025 sobre seguradoras financiando data centers como bancos financiaram hipotecas pré-2008 -- mesmo ceticismo, nova infraestrutura", "a": {"id": "1999-114-F5", "year": "1999", "title": "Let's Not Get Too Wired", "author": "Edward Tenner", "quote": "Now we have wide access to the Internet, yet consumption of electricity continues to rise as electronic devices multiply.", "highlights": ["consumption of electricity continues to rise as electronic devices multiply"]}, "b": {"id": "2025-188-F5", "year": "2025", "title": "The A.I. Economy Is Booming. Everything Else Is Meh.", "author": "Natasha Sarin", "quote": "Private-equity-backed insurance companies are funneling policyholders' premiums into the energy and infrastructure investments required to power the A.I. boom, much as banks before the financial crisis funded a mortgage boom they didn't fully understand.", "highlights": ["much as banks before the financial crisis funded a mortgage boom they didn't fully understand"]}}, {"family": null, "familyLabel": "Other Cross-Era Echoes", "motifLabel": null, "echo": "o par entusiasta/cético sobre se a Internet ajuda ou atrapalha a pesquisa dos estudantes retorna quase palavra por palavra no debate sobre se o ChatGPT prova ou não inteligência", "a": {"id": "1999-092-F3", "year": "1999", "title": "No Computer Can Hold the Past", "author": "Robert Darnton", "quote": "Enthusiasts proclaim that it has made a world of information available to any freshman with a computer. Skeptics warn that cyberspace is so full of junk that research in it will never amount to anything more than garbage collecting.", "highlights": ["Enthusiasts proclaim", "Skeptics warn"]}, "b": {"id": "2025-138-F1", "year": "2025", "title": "Stop Worrying and Have Fun With A.I.", "author": "Leif Weatherby", "quote": "I certainly don't think it proves that ChatGPT is intelligent; it just shows that it is an expert imitator of style.", "highlights": ["an expert imitator of style"]}}, {"family": null, "familyLabel": "Other Cross-Era Echoes", "motifLabel": null, "echo": "a piada inventada de Friedman sobre a Amazon 'acidentalmente' dando lucro ecoa na comparação séria de 2025 entre o valuation da OpenAI ($1 trilhão pedido, $13 bilhões de receita) e a lógica do 'greater fool'", "a": {"id": "1999-166-F4", "year": "1999", "title": "Reality Bytes", "author": "Thomas L. Friedman", "quote": "Amazon stunned Wall Street by announcing earnings of 1 cent per share this quarter on sales of $1.1 trillion, or 10 percent of U.S. G.D.P.", "highlights": ["earnings of 1 cent per share"]}, "b": {"id": "2025-193-F2", "year": "2025", "title": "Warning: Our Stock Market Is Looking Like a Bubble", "author": "Jared Bernstein and Ryan Cummings", "quote": "OpenAI says it needs at least $1 trillion to invest in data centers, yet the company's revenues are expected to amount to a mere $13 billion this year.", "highlights": ["needs at least $1 trillion", "a mere $13 billion"]}}, {"family": null, "familyLabel": "Other Cross-Era Echoes", "motifLabel": null, "echo": "Taiwan como elo oculto e essencial da cadeia de hardware em 1999 ecoa em 2025 na dependência americana de chips avançados como ponto de vulnerabilidade geopolítica frente à China", "a": {"id": "1999-141-F1", "year": "1999", "title": "The Future Is Made In . . .", "author": "Thomas L. Friedman", "quote": "I couldn't resist turning my Dell over and looking at the bottom. It said: ''Made in Taiwan.''", "highlights": ["''Made in Taiwan.''"]}, "b": {"id": "2025-028-F5", "year": "2025", "title": "Stop Worshiping the American Tech Giants", "author": "Lina M. Khan", "quote": "Marc Andreessen, the Silicon Valley investor, went so far as to describe it as ''A.I.'s Sputnik moment.''", "highlights": ["A.I.'s Sputnik moment"]}}, {"family": null, "familyLabel": "Other Cross-Era Echoes", "motifLabel": null, "echo": "os 'oportunistas despreparados' que a bolha de 1999 atraiu para empregos de tecnologia encontram eco espelhado em 2025 nos trabalhadores criativos empurrados para fora da profissão pela mesma onda de capital", "a": {"id": "1999-208-F5", "year": "1999", "title": "Is There Too Much Venture Capital?", "author": "Charles Ferguson", "quote": "Fortune seekers, many of them unqualified, flood to the Internet -- both to start companies and to work in them.", "highlights": ["Fortune seekers, many of them unqualified"]}, "b": {"id": "2025-239-F11b", "year": "2025", "title": "The Starving Artist vs. the Machine", "author": "Caitlin Petre and Julia Ticona", "quote": "Our takeaway from these conversations: What A.I. imperils is not human creativity itself but the ability to make a living from creative endeavor.", "highlights": ["not human creativity itself but the ability to make a living"]}}];
+
+function diptychMarkify(quote, highlights){
+  let escaped = escapeHTML(quote);
+  (highlights||[]).slice().sort((a,b)=>b.length-a.length).forEach(h=>{
+    const eh = escapeHTML(h);
+    if(escaped.indexOf(eh) === -1) return;
+    escaped = escaped.replace(eh, `<mark>${eh}</mark>`);
+  });
+  return escaped;
+}
+
+function renderCorrespondenceGrid(){
+  if(!DIPTYCH_PAIRS.length) return '<p class="corr-empty">No highlight pairs coded yet.</p>';
+  return `
+  <div class="diptych-wrap">
+    <div class="diptych-legend mono" id="diptychLegend"></div>
+    <div class="diptych-frame">
+      <div class="diptych-frame-inner">
+        <div class="diptych-stage">
+          <svg id="diptychSvg" viewBox="0 0 880 560" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="diptych-caption mono">Correspondences &middot; <em>1999 / 2025</em> &middot; sixteen panels, hinged at the center</div>
+  </div>`;
+}
+
+function wireCorrespondenceGrid(root){
+  const svgEl = root.querySelector('#diptychSvg');
+  const legendEl = root.querySelector('#diptychLegend');
+  if(!svgEl || !legendEl || typeof d3 === 'undefined') return;
+
+  const tooltip = document.getElementById('diptychTooltip');
+  const panel = document.getElementById('diptychPanel');
+
+  /* same ordering rule as the prototype: group by family (largest family
+     first), unattached pairs ("Other Cross-Era Echoes") pushed to the end,
+     so index i always pairs the same row across both columns */
+  const familyOrder = [...new Set(DIPTYCH_PAIRS.map(p=>p.familyLabel))].sort((a,b)=>{
+    if(a === 'Other Cross-Era Echoes') return 1;
+    if(b === 'Other Cross-Era Echoes') return -1;
+    return DIPTYCH_PAIRS.filter(p=>p.familyLabel===b).length - DIPTYCH_PAIRS.filter(p=>p.familyLabel===a).length;
+  });
+  const ordered = familyOrder.flatMap(fam => DIPTYCH_PAIRS.filter(p=>p.familyLabel===fam));
+
+  const N = ordered.length;
+  const COLS = 4, ROWS = Math.ceil(N / COLS);
+
+  function gridPos(i, x0, x1, y0, y1){
+    const col = i % COLS, row = Math.floor(i / COLS);
+    const cw = (x1 - x0) / COLS, rh = (y1 - y0) / ROWS;
+    return { x: x0 + cw*(col+0.5), y: y0 + rh*(row+0.5) };
+  }
+
+  const LEFT  = {x0: 60,  x1: 350, y0: 90, y1: 500};
+  const RIGHT = {x0: 530, x1: 820, y0: 90, y1: 500};
+
+  const leftItems  = ordered.map((p,i) => Object.assign({side:'a', idx:i, pair:p}, p.a, gridPos(i, LEFT.x0, LEFT.x1, LEFT.y0, LEFT.y1)));
+  const rightItems = ordered.map((p,i) => Object.assign({side:'b', idx:i, pair:p}, p.b, gridPos(i, RIGHT.x0, RIGHT.x1, RIGHT.y0, RIGHT.y1)));
+  const allItems = leftItems.concat(rightItems);
+
+  const svg = d3.select(svgEl);
+  const layer = svg.append('g');
+
+  svg.append('text').attr('class','diptych-col-label a').attr('x', (LEFT.x0+LEFT.x1)/2).attr('y', 50).attr('text-anchor','middle').text('1999');
+  svg.append('text').attr('class','diptych-col-label b').attr('x', (RIGHT.x0+RIGHT.x1)/2).attr('y', 50).attr('text-anchor','middle').text('2025');
+
+  /* the hinge itself — drawn once, sits behind the cells, spans the gutter between the two panels */
+  (function drawHinge(){
+    const midX = (LEFT.x1 + RIGHT.x0) / 2; // gutter center
+    const hingeLayer = svg.insert('g', ':first-child').attr('class','diptych-hinge-layer');
+    hingeLayer.append('line')
+      .attr('class','diptych-hinge-line')
+      .attr('x1', midX).attr('y1', LEFT.y0 - 20)
+      .attr('x2', midX).attr('y2', LEFT.y1 + 20);
+    [LEFT.y0 - 4, (LEFT.y0+LEFT.y1)/2, LEFT.y1 + 4].forEach(py => {
+      hingeLayer.append('rect')
+        .attr('class','diptych-hinge-plate')
+        .attr('x', midX-9).attr('y', py-13).attr('width', 18).attr('height', 26).attr('rx', 3);
+      hingeLayer.append('circle')
+        .attr('class','diptych-hinge-pin')
+        .attr('cx', midX).attr('cy', py).attr('r', 2.2);
+    });
+  })();
+
+  const r = 14;
+  const cellG = layer.selectAll('g.diptych-cell')
+    .data(allItems)
+    .join('g')
+    .attr('class', 'diptych-cell')
+    .attr('transform', d => `translate(${d.x},${d.y})`)
+    .on('click', (event, d) => { event.stopPropagation(); pick(d.idx); });
+
+  cellG.append('g')
+    .attr('class','diptych-bob')
+    .style('--bob-dur', () => (4 + Math.random()*3).toFixed(2)+'s')
+    .style('--bob-delay', () => (Math.random()*3).toFixed(2)+'s')
+    .style('--bob-dx', () => (Math.random()*3-1.5).toFixed(1)+'px')
+    .style('--bob-dy', () => (Math.random()*3-1.5).toFixed(1)+'px')
+    .append('circle')
+    .attr('class', d => 'core ' + d.side)
+    .attr('r', r);
+
+  cellG
+    .on('mousemove', (event, d) => {
+      tooltip.innerHTML = `<span class="t-year ${d.side}">${d.year}</span> &middot; ${escapeHTML(d.author)}<br>${escapeHTML(d.title)}`;
+      tooltip.style.left = (event.clientX + 14) + 'px';
+      tooltip.style.top = (event.clientY + 10) + 'px';
+      tooltip.classList.add('show');
+    })
+    .on('mouseleave', () => tooltip.classList.remove('show'));
+
+  const connectorLayer = layer.append('g').attr('class','diptych-connector-layer');
+
+  /* family legend / filter */
+  let activeFamily = null;
+  familyOrder.forEach(fam => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = fam;
+    btn.addEventListener('click', (e) => { e.stopPropagation(); toggleFamily(fam, btn); });
+    legendEl.appendChild(btn);
+  });
+
+  function toggleFamily(fam, btn){
+    clearPick();
+    [...legendEl.children].forEach(b => b.classList.remove('active'));
+    if(activeFamily === fam){ activeFamily = null; cellG.classed('diptych-is-dimmed', false); return; }
+    activeFamily = fam;
+    btn.classList.add('active');
+    cellG.classed('diptych-is-dimmed', d => d.pair.familyLabel !== fam);
+  }
+
+  function clearPick(){
+    cellG.classed('diptych-is-dimmed', false).classed('diptych-is-picked', false);
+    connectorLayer.selectAll('*').remove();
+    closePanel();
+  }
+
+  function pick(idx){
+    [...legendEl.children].forEach(b => b.classList.remove('active'));
+    activeFamily = null;
+
+    cellG.classed('diptych-is-dimmed', d => d.idx !== idx)
+         .classed('diptych-is-picked', d => d.idx === idx);
+
+    connectorLayer.selectAll('*').remove();
+    const a = leftItems[idx], b = rightItems[idx];
+    const mx = (a.x + b.x) / 2;
+    const path = `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`;
+    connectorLayer.append('path').attr('class','diptych-connector-line').attr('d', path);
+    connectorLayer.append('circle').attr('class','diptych-connector-dot').attr('cx',a.x).attr('cy',a.y).attr('r',2.4).attr('fill','var(--amber)');
+    connectorLayer.append('circle').attr('class','diptych-connector-dot').attr('cx',b.x).attr('cy',b.y).attr('r',2.4).attr('fill','var(--turq)');
+
+    openPanel(ordered[idx]);
+  }
+
+  svg.on('click', clearPick);
+
+  /* detail panel */
+  function pcardHTML(side, cls){
+    return `<div class="diptych-pcard ${cls}">
+      <div class="yr">${escapeHTML(side.year)}</div>
+      <p class="quote">${diptychMarkify(side.quote, side.highlights)}</p>
+      <div class="meta"><span class="title">${escapeHTML(side.title)}</span> &middot; ${escapeHTML(side.author)}</div>
+    </div>`;
+  }
+  function openPanel(pair){
+    document.getElementById('diptychPanelFamily').textContent = pair.familyLabel;
+    document.getElementById('diptychPanelMotif').textContent = pair.motifLabel ? pair.motifLabel.replace(/^"|"$/g,'') : '';
+    document.getElementById('diptychPanelCards').innerHTML = pcardHTML(pair.a,'col-1999') + pcardHTML(pair.b,'col-2025');
+    panel.classList.add('open');
+  }
+  function closePanel(){ panel.classList.remove('open'); }
+
+  document.getElementById('diptychPanelClose').addEventListener('click', (e)=>{ e.stopPropagation(); clearPick(); });
+}
+
+/* =========================================================================
+   BUBBLE INTRO — teaches the fragment/year color grammar before the
+   prologue text appears. Plays once per browser session.
+   ========================================================================= */
+const BP_SESSION_KEY = 'bp_bubbleIntroSeen';
+
+function renderBubbleIntro(){
+  return `
+  <div class="bubble-intro" id="bubbleIntro" tabindex="0"
+       aria-label="Introductory sequence. Click, tap, or press space to continue.">
+    <button class="skip mono" id="bpSkip" type="button">Skip intro</button>
+    <div class="bubble-field">
+      <div class="bp-bubble primary" id="bpPrimary" data-color="neutral"></div>
+      <div class="bp-bubble secondary" id="bpSecondary"></div>
+    </div>
+    <p class="bp-caption" id="bpCaption"></p>
+    <div class="bp-progress" id="bpProgress"></div>
+  </div>`;
+}
+
+function wireBubbleIntro(app){
+  const intro = app.querySelector('#bubbleIntro');
+  const prologueContent = app.querySelector('#prologueContent');
+  if(!intro || !prologueContent) return;
+
+  const alreadySeen = sessionStorage.getItem(BP_SESSION_KEY) === '1';
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if(alreadySeen){
+    intro.remove();
+    prologueContent.classList.add('show');
+    return;
+  }
+
+  // Lock scroll while the intro is playing — otherwise a reader can scroll straight
+  // past it before the sequence (or the skip button) has run. Locks BOTH body and
+  // .spine-scroll: the prologue/chapters now scroll inside their own nested
+  // .spine-scroll container (see the html{} comment in <style> for why), which is
+  // an independent scroll context from body — locking only body's overflow would
+  // leave .spine-scroll itself still scrollable via wheel/touch while the intro plays.
+  // Released in complete(), the only path out of the intro.
+  const spineScroll = app.querySelector('.spine-scroll');
+  document.body.style.overflow = 'hidden';
+  if(spineScroll) spineScroll.style.overflow = 'hidden';
+
+  // Set to false to drop the "echo" beat — everything else still works.
+  const INCLUDE_CONNECTION_BEAT = true;
+
+  const beats = [
+    { color:'neutral', text:'', silent:true, duration:1200 },
+    { color:'neutral', text:'This is a fragment of a news story published in the New York Times Editorial Desk.' },
+    { color:'amber', text:'This means it was published in 1999 — during the internet boom.' },
+    { color:'turq', text:'This means it was published in 2025 — during the AI boom.' },
+  ];
+  if(INCLUDE_CONNECTION_BEAT){
+    beats.push({ color:'connection', text:'Sometimes, a fragment from one year echoes another.' });
+  }
+  beats.push({ color:'turq', text:'You’ll meet hundreds of these.', final:true });
+
+  const primary = intro.querySelector('#bpPrimary');
+  const secondary = intro.querySelector('#bpSecondary');
+  const caption = intro.querySelector('#bpCaption');
+  const progress = intro.querySelector('#bpProgress');
+  const skipBtn = intro.querySelector('#bpSkip');
+
+  const visibleBeats = beats.filter(b=>!b.silent);
+  visibleBeats.forEach(()=> progress.appendChild(document.createElement('span')));
+
+  let index = 0, timer = null;
+
+  function showBeat(i){
+    const beat = beats[i];
+    if(beat.color === 'connection'){
+      primary.dataset.color = 'amber';
+      primary.classList.add('paired');
+      secondary.dataset.color = 'turq';
+      secondary.classList.add('show');
+    } else {
+      primary.dataset.color = beat.color;
+      primary.classList.remove('paired');
+      secondary.classList.remove('show');
+    }
+    caption.classList.remove('show');
+    setTimeout(()=>{
+      caption.textContent = beat.text;
+      if(beat.text) caption.classList.add('show');
+    }, beat.silent ? 0 : 200);
+
+    const dots = [...progress.children];
+    const vIdx = beats.slice(0,i+1).filter(b=>!b.silent).length - 1;
+    dots.forEach((d,di)=> d.classList.toggle('active', di===vIdx));
+
+    clearTimeout(timer);
+    if(!beat.final){
+      timer = setTimeout(advance, reduced ? 200 : (beat.duration || 3600));
+    }
+  }
+
+  function advance(){
+    if(index >= beats.length - 1){ complete(); return; }
+    index += 1;
+    showBeat(index);
+  }
+
+  function complete(){
+    clearTimeout(timer);
+    sessionStorage.setItem(BP_SESSION_KEY, '1');
+    document.body.style.overflow = '';
+    if(spineScroll) spineScroll.style.overflow = '';
+    intro.style.transition = 'opacity .7s ease';
+    intro.style.opacity = '0';
+    setTimeout(()=>{
+      intro.remove();
+      prologueContent.classList.add('show');
+    }, reduced ? 0 : 700);
+  }
+
+  if(reduced){ complete(); return; }
+
+  intro.addEventListener('click', advance);
+  intro.addEventListener('keydown', (e)=>{
+    if(e.code==='Space' || e.code==='Enter'){ e.preventDefault(); advance(); }
+  });
+  skipBtn.addEventListener('click', (e)=>{ e.stopPropagation(); complete(); });
+
+  showBeat(0);
+}
+
+function renderBiography(){
+  const parts = [];
+  // Prologue + the chapter spine share one nested scroll container (.spine-scroll)
+  // with its own mandatory snap, separate from the page's normal scroll. This is
+  // what actually fixes the trap bug that kept resurfacing: scroll-snap-type was
+  // previously declared on <html>, the SAME container the whole page (Metaphors,
+  // footer, everything) scrolls in — mandatory snapping there is forced to always
+  // rest on a snap point, so it kept trapping the reader wherever the last snap
+  // target happened to be (first Diptych, then Metaphors, moving every time
+  // something free-scrolling was appended after it). Scoping mandatory snap to
+  // its own finite, one-viewport-tall container sidesteps that permanently: once
+  // the reader scrolls past this container's last snap point (Diptych), they've
+  // simply reached the end of ITS scrollable content, and the browser hands off
+  // to the outer page's normal (unsnapped) scroll on its own — no "next snap
+  // target" needed, and no possible trap.
+  parts.push(`<div class="spine-scroll">
+  <section class="prologue">
+    ${renderBubbleIntro()}
+    <div class="prologue-content" id="prologueContent">
+      <div class="eyebrow">A Biography of two technologies</div>
+      <h1>Biography of the Bubbles</h1>
+      <p class="sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <div class="authorial">[Lorem ipsum dolor sit amet]<br><em>Prologue — Threshold.</em> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+      <div class="scrolldown">begin the descent &darr;</div>
+    </div>
+  </section>
+
+  ${renderChapters()}
+  </div>`);
+
+  // Metaphors was previously its own tab; folded in here as a second section of the same
+  // page, right before the credit footer, rather than a page transition — renderMetaphorsBody
+  // deliberately omits its own hero/footer so the two don't stack inside one page. Lives
+  // outside .spine-scroll now, in the page's normal free-scroll flow.
+  parts.push(`<div class="chapter-head section-divider">
+    <div class="eyebrow"><span class="prov">an imagery of technologies</span></div>
+    <h2>Metaphors</h2>
+    <div class="count">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.</div>
+  </div>`);
+  parts.push(renderMetaphorsBody());
+
+  return parts.join('');
+}
+
+/* =========================================================================
+   5b. METAPHORS SECTION (folded into the Biography tab)
+   ========================================================================= */
+
+// The mythic voice is derived from source_image itself ("a sacred, quasi-mythical
+// object of quest" -> "I am a sacred, quasi-mythical object of quest."), not a
+// separately hand-written field. Cards whose source_image is missing fall back
+// to a plain .metacard flagged for later curation.
+function mythicVoiceFromSourceImage(sourceImage){
+  if(!sourceImage) return null;
+  const s = sourceImage.trim();
+  const body = s.charAt(0).toLowerCase() + s.slice(1);
+  return `I am ${body}.`;
+}
+
+function metaphorArticle(m){
+  return allArticles().find(a => (a.metaphor_ids||[]).includes(m.id));
+}
+
+function metaphorCountsByYearAndCluster(){
+  const counts = {}; // counts[cluster] = {'1999':n,'2025':n}
+  Object.values(DATA.metaphors).forEach(m=>{
+    const art = metaphorArticle(m);
+    if(!art) return;
+    counts[m.cluster] = counts[m.cluster] || {'1999':0,'2025':0};
+    counts[m.cluster][art.year] = (counts[m.cluster][art.year]||0) + 1;
+  });
+  return counts;
+}
+
+function metaphorsByClusterAndYear(cluster, year){
+  return Object.values(DATA.metaphors).filter(m=>{
+    if(m.cluster !== cluster) return false;
+    const art = metaphorArticle(m);
+    return art && art.year === year;
+  });
+}
+
+// Deck stacking: only the next few cards behind the top show a sliver of
+// edge/rotation, so it reads as a deck of cards, not a fan. Anything deeper
+// than that sits pinned directly under the visible stack (no growing offset).
+const DECK_VISIBLE_DEPTH = 3;
+const DECK_STEP_PX = 5;
+const DECK_STEP_DEG = 1.6;
+function deckOffsetStyle(i){
+  const depth = Math.min(i, DECK_VISIBLE_DEPTH);
+  const sign = (i%2?1:-1);
+  const rot = i===0 ? 0 : sign*DECK_STEP_DEG*depth;
+  const dx = depth*DECK_STEP_PX*0.6;
+  const dy = depth*DECK_STEP_PX;
+  return `transform:rotate(${rot}deg) translate(${dx}px, ${dy}px); z-index:${1000-i};`;
+}
+
+// Fallback card — used only when source_image is missing. Janyne flags these
+// herself later; nothing here is invented to fill the gap.
+function metacardHTML(m, i){
+  const art = metaphorArticle(m);
+  const style = deckOffsetStyle(i);
+  return `<article class="metacard" data-metaphor-id="${escapeHTML(m.id)}" style="${style}">
+    <span class="no-image-flag">no source_image coded</span>
+    <div class="subject">${escapeHTML(m.metaphor_trigger)}</div>
+    <div class="meta">
+      ${art ? `<a href="#article/${art.id}" data-nav-article="${art.id}">${escapeHTML(art.title)}</a> &middot; ${escapeHTML(authorLabel(art.author_id))} &middot; ${escapeHTML(art.year)}` : ''}
+      &middot; ${escapeHTML(metaphorLabel(m.cluster))}
+    </div>
+  </article>`;
+}
+
+// Bestiary flip-card. Front: the creature speaking in first person, derived
+// from source_image, tarot-card treatment. Back: the verbatim passage as a
+// specimen label / field report proving the creature exists in the corpus.
+// Flip is triggered by click/hover on the card, not scroll — this is the
+// argument itself (myth first, then the journalism underneath it), so the
+// reader has to act on the card to get from one to the other.
+function beastcardHTML(m, i){
+  const art = metaphorArticle(m);
+  const voice = mythicVoiceFromSourceImage(m.source_image);
+  const style = `z-index:${1000-i};`;
+  return `<article class="beastcard" data-metaphor-id="${escapeHTML(m.id)}" data-flipped="0" style="${style}">
+    <div class="beastcard-inner">
+      <div class="beastcard-face beastcard-front">
+        <div class="beastcard-tag">${escapeHTML(metaphorLabel(m.cluster))}</div>
+        <div class="beastcard-voice">${escapeHTML(voice)}</div>
+        <div class="beastcard-hint">tap to see the source &darr;</div>
+      </div>
+      <div class="beastcard-face beastcard-back">
+        <div class="specimen-tag">Field report &middot; sighting confirmed</div>
+        <p class="specimen-quote">${escapeHTML(m.passage)}</p>
+        <div class="meta">${art ? `<a href="#article/${art.id}" data-nav-article="${art.id}">${escapeHTML(art.title)}</a> &middot; ${escapeHTML(authorLabel(art.author_id))} &middot; ${escapeHTML(art.year)}` : ''}</div>
+      </div>
+    </div>
+  </article>`;
+}
+
+function metadeckHTML(cluster, year){
+  const items = seededShuffle(metaphorsByClusterAndYear(cluster, year), CHAPTER_SEED + cluster.charCodeAt(2) + (year==='1999'?1:2));
+  if(!items.length) return `<div class="metadeck"><p class="pending">none</p></div>`;
+
+  const cardsHTML = items.map((m,i)=> m.source_image ? beastcardHTML(m,i) : metacardHTML(m,i)).join('');
+
+  return `<div class="metadeck" data-cluster="${cluster}" data-year="${year}">
+    ${cardsHTML}
+    ${items.length>1 ? `<div class="deck-hint">${items.length} in this deck — click the top card to flip, click a card edge to cycle</div>` : ''}
+  </div>`;
+}
+
+const BUBBLE_INTERLUDE = {
+  id:'bubble-metaphors',
+  eyebrow:'Marginalia — the metaphor the thesis is named for',
+  build(){
+    const bubbleMs = Object.values(DATA.metaphors).filter(m=>m.is_bubble_metaphor);
+    const c99 = bubbleMs.filter(m=>{ const a=metaphorArticle(m); return a && a.year==='1999'; }).length;
+    const c25 = bubbleMs.filter(m=>{ const a=metaphorArticle(m); return a && a.year==='2025'; }).length;
+    const total = Object.keys(DATA.metaphors).length;
+    return `<div class="marginalia"><div class="m-eyebrow">${this.eyebrow}</div>
+      <h3>The Bubble</h3>
+      <p>Of <span class="m-stat">${total} metaphors</span> coded across the corpus, only
+      <span class="m-stat">${bubbleMs.length}</span> are literal bubble/inflation figures —
+      <span class="m-stat">${c99}</span> in 1999, <span class="m-stat">${c25}</span> in 2025.
+      That is a small slice of the total figurative language, not the dominant pattern. It gives this
+      project its title because it is thematically central to what a "bubble" means across both
+      moments — not because it is the most common metaphor in the data.</p>
+    </div>`;
+  }
+};
+
+function metaphorCloseHTML(){
+  const counts = metaphorCountsByYearAndCluster();
+  const clusters = Object.keys(DATA.metaphor_categories);
+  const segColors = ['b-sublime','b-demonic','b-paired','b-deflated','b-none']; // reused CSS hues, cycled
+  const segStyle = ['var(--sublime)','var(--demonic)','var(--paired)','var(--deflated)','var(--turq)','var(--amber)','#8a6ea8','#4d7a7a'];
+
+  function bar(year){
+    const total = clusters.reduce((s,c)=> s + ((counts[c]||{})[year]||0), 0) || 1;
+    return `<div class="regbar">${clusters.map((c,i)=>{
+      const n = (counts[c]||{})[year]||0;
+      if(!n) return '';
+      return `<span style="width:${(n/total*100).toFixed(1)}%;background:${segStyle[i%segStyle.length]}" title="${escapeHTML(metaphorLabel(c))}: ${n}"></span>`;
+    }).join('')}</div>`;
+  }
+
+  const legend = clusters.map((c,i)=>`<span><i style="background:${segStyle[i%segStyle.length]}"></i>${escapeHTML(metaphorLabel(c))}</span>`).join('');
+
+  return `<div class="chapter-close metaphor-close-grid">
+    <h3>Metaphor cluster balance — 1999 vs 2025 (recalculated live from ${Object.keys(DATA.metaphors).length} coded metaphors)</h3>
+    <div class="close-grid">
+      <div class="close-col c1999"><h4>1999</h4>${bar('1999')}</div>
+      <div class="close-col c2025"><h4>2025</h4>${bar('2025')}</div>
+    </div>
+    <div class="mc-legend" style="justify-content:center;">${legend}</div>
+  </div>`;
+}
+
+function renderMetaphorsBody(){
+  const counts = metaphorCountsByYearAndCluster();
+  const clusters = Object.keys(DATA.metaphor_categories);
+  const ordered = clusters.slice().sort((a,b)=>{
+    const da = Math.abs(((counts[a]||{})['2025']||0) - ((counts[a]||{})['1999']||0));
+    const db = Math.abs(((counts[b]||{})['2025']||0) - ((counts[b]||{})['1999']||0));
+    return db - da;
+  });
+
+  const parts = [];
+  parts.push(`<div class="authorial section-intro">[Lorem ipsum dolor sit amet]<br><em>Metaphors.</em> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>`);
+
+  ordered.forEach((cluster, idx)=>{
+    parts.push(`<div class="metaphor-cluster" data-reveal>
+      <div class="chapter-head">
+        <h2>${escapeHTML(metaphorLabel(cluster))}</h2>
+      </div>
+
+      <div class="spine">
+        <div class="col col-1999">
+          <div class="col-label">1999</div>
+          ${metadeckHTML(cluster, '1999')}
+        </div>
+        <div class="col col-2025">
+          <div class="col-label">2025</div>
+          ${metadeckHTML(cluster, '2025')}
+        </div>
+      </div>
+    </div>`);
+
+    // BUBBLE_INTERLUDE.build() already returns a complete .marginalia block (with
+    // its own eyebrow + h3), unlike marginaliaHTML()'s usual contract of wrapping a
+    // bare {eyebrow,title,build} — routing it through marginaliaHTML() double-wrapped
+    // the markup and printed "undefined" for the h3 marginaliaHTML expected but
+    // BUBBLE_INTERLUDE never defines.
+    if(idx===0) parts.push(BUBBLE_INTERLUDE.build());
+  });
+
+  parts.push(`<div class="spine">${metaphorCloseHTML()}</div>`);
+
+  return parts.join('');
+}
+
+function wireMetaphorDecks(){
+  document.querySelectorAll('.metadeck').forEach(deck=>{
+    // `order` is the current stacking order (front-to-back), kept in sync with every
+    // cycle so a click can always tell whether it landed on today's top card — using
+    // each card's original DOM index instead (fixed at wiring time) meant that after
+    // the first cycle, clicking the card that now visually sits on top would run
+    // whatever branch its *original* index dictated, not the one matching what's
+    // on screen: clicks on the true top card silently re-cycled instead of flipping,
+    // so flipping stopped working, which read as cards going dead / never revealing
+    // their source passage.
+    let cards = Array.from(deck.children).filter(c=>c.classList.contains('metacard')||c.classList.contains('beastcard'));
+    let order = cards.map((c,i)=>i);
+
+    function applyOrder(){
+      order.forEach((origIdx,newPos)=>{
+        const el = cards[origIdx];
+        const depth = Math.min(newPos, DECK_VISIBLE_DEPTH);
+        const sign = (newPos%2?1:-1);
+        const rot = newPos===0 ? 0 : sign*DECK_STEP_DEG*depth;
+        const dx = depth*DECK_STEP_PX*0.6;
+        const dy = depth*DECK_STEP_PX;
+        el.style.zIndex = 1000-newPos;
+        el.style.transform = `rotate(${rot}deg) translate(${dx}px, ${dy}px)`;
+      });
+    }
+
+    function cycleTo(origIdx){
+      const pos = order.indexOf(origIdx);
+      if(pos <= 0) return; // already the top card — handled by flip, not cycling
+      order = order.slice(pos).concat(order.slice(0,pos));
+      applyOrder();
+    }
+
+    cards.forEach((card,origIdx)=>{
+      card.addEventListener('click', (e)=>{
+        if(e.target.closest('a')) return;
+        const isTop = order[0] === origIdx;
+        if(isTop && card.classList.contains('beastcard')){
+          card.setAttribute('data-flipped', card.getAttribute('data-flipped')==='1' ? '0' : '1');
+          return;
+        }
+        cycleTo(origIdx);
+      });
+    });
+  });
+}
+
+/* fades/lifts each [data-reveal] element (currently: the Metaphors
+   subcategories) into place as the reader scrolls to it. One-shot per
+   element — once revealed it stays visible, so scrolling back up doesn't
+   re-hide content the reader already saw. Falls back to revealing
+   everything immediately if IntersectionObserver isn't available, so
+   content is never stuck invisible. */
+function wireScrollReveal(root){
+  const targets = root.querySelectorAll('[data-reveal]');
+  if(!targets.length) return;
+
+  if(typeof IntersectionObserver === 'undefined'){
+    targets.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+
+  targets.forEach(el => observer.observe(el));
+}
+
+/* =========================================================================
+   6. LAYER 2 — EVIDENCE (filterable browser)
+   ========================================================================= */
+const FILTER_DIMS = [
+  {key:'era', label:'Era', get:(f,a)=>[a?a.year:null]},
+  {key:'author', label:'Author', get:(f,a)=>[a?a.author_id:null], labelFn:authorLabel},
+  {key:'company', label:'Company', get:(f,a)=>a?a.company_ids:[], labelFn:id=>(company(id)||{}).label||id},
+  {key:'myth', label:'Myth', get:(f)=>getMyths(f).map(m=>m.narrative), labelFn:id=>(myth(id)||{}).label||id},
+  {key:'subtheme', label:'Subtheme', get:(f)=>getMyths(f).map(m=>m.subtheme).filter(Boolean)},
+  {key:'register', label:'Register', get:(f)=>getMyths(f).map(m=>m.stance==='deflated'?'deflated':m.register).filter(Boolean)},
+  {key:'stance', label:'Stance', get:(f)=>getMyths(f).map(m=>m.stance)},
+  {key:'metaphor', label:'Metaphor category', get:(f,a)=>a?a.metaphor_category_ids:[], labelFn:metaphorLabel},
+  {key:'keyword', label:'Keyword', get:(f)=>f.keywords||[], labelFn:keywordLabel, searchable:true},
+  {key:'topic', label:'Topic', get:(f,a)=>a?[a.topic_primary,a.topic_secondary].filter(Boolean):[], labelFn:topicLabel},
+  {key:'peters', label:'Peters stage', get:(f,a)=>a?[a.peters_primary].concat(a.peters_secondary||[]):[], labelFn:peterLabel},
+  {key:'authorvoice', label:'Author voice', get:(f,a)=>a?(authorOf(a)||{}).professions||[]:[], labelFn:voiceLabel},
+  {key:'quotedvoice', label:'Quoted voices', get:(f,a)=>a?a.quoted_voices:[], labelFn:voiceLabel},
+  {key:'authorshiptype', label:'Authorship type', get:(f,a)=>a?[(authorOf(a)||{}).authorship_type||'uncoded']:['uncoded']}
+];
+
+let activeFilters = {}; // key -> Set of values
+
+function parseFiltersFromURL(){
+  activeFilters = {};
+  const params = new URLSearchParams(location.hash.split('?')[1]||'');
+  FILTER_DIMS.forEach(d=>{
+    const v = params.get(d.key);
+    if(v) activeFilters[d.key] = new Set(v.split(','));
+  });
+}
+function filtersToURL(){
+  const params = new URLSearchParams();
+  Object.keys(activeFilters).forEach(k=>{
+    if(activeFilters[k] && activeFilters[k].size) params.set(k, Array.from(activeFilters[k]).join(','));
+  });
+  const qs = params.toString();
+  const base = '#evidence';
+  history.replaceState(null,'', base + (qs?('?'+qs):''));
+}
+
+function fragmentMatchesFilters(f){
+  const a = article(f.article_id);
+  return FILTER_DIMS.every(d=>{
+    const sel = activeFilters[d.key];
+    if(!sel || !sel.size) return true;
+    const vals = d.get(f,a) || [];
+    return vals.some(v=>sel.has(String(v)));
+  });
+}
+
+function buildFilterOptions(){
+  return FILTER_DIMS.map(d=>{
+    const counts = {};
+    allFragments().forEach(f=>{
+      const a = article(f.article_id);
+      (d.get(f,a)||[]).forEach(v=>{ if(v!=null){ counts[v]=(counts[v]||0)+1; } });
+    });
+    let entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    return {dim:d, entries};
+  });
+}
+
+const SEARCHABLE_VISIBLE_DEFAULT = 12;
+
+function renderEvidence(){
+  const opts = buildFilterOptions();
+  const filtersHTML = opts.map(({dim,entries})=>{
+    if(!entries.length) return '';
+    const activeVals = activeFilters[dim.key] || new Set();
+    const rows = entries.map(([val,count])=>{
+      const checked = activeVals.has(val) ? 'checked' : '';
+      const lbl = dim.labelFn ? dim.labelFn(val) : val;
+      const hideByDefault = dim.searchable && !checked && entries.findIndex(e=>e[0]===val) >= SEARCHABLE_VISIBLE_DEFAULT;
+      return `<label data-search-text="${escapeHTML(String(lbl).toLowerCase())}" ${hideByDefault?'style="display:none" data-hidden-overflow="1"':''}>
+        <input type="checkbox" data-dim="${dim.key}" value="${escapeHTML(val)}" ${checked}> ${escapeHTML(lbl)} <span class="filter-count">(${count})</span>
+      </label>`;
+    }).join('');
+    const searchBox = dim.searchable
+      ? `<input type="text" class="filter-search" data-search-for="${dim.key}" placeholder="search ${entries.length} keywords…">`
+      : '';
+    const overflowCount = dim.searchable ? Math.max(0, entries.length - SEARCHABLE_VISIBLE_DEFAULT) : 0;
+    const showAllBtn = overflowCount
+      ? `<button class="show-all-filter" data-show-all-for="${dim.key}">+ ${overflowCount} more</button>` : '';
+    return `<div class="filter-group" data-filter-group="${dim.key}"><h4>${dim.label}</h4>${searchBox}${rows}${showAllBtn}</div>`;
+  }).join('');
+
+  return `<div class="evidence-shell">
+    <div class="filters">
+      <h4 style="margin-top:0;">Filters</h4>
+      ${filtersHTML}
+      <button class="clear-filters" id="clear-filters-btn">Clear all filters</button>
+    </div>
+    <div class="results" id="evidence-results"></div>
+  </div>`;
+}
+
+function renderEvidenceResults(){
+  const container = document.getElementById('evidence-results');
+  if(!container) return;
+  const matched = allFragments().filter(fragmentMatchesFilters);
+  const total = allFragments().length;
+  const noMythPct = Math.round(100 * allFragments().filter(f=>!getMyths(f).length).length / total);
+
+  // Group matched fragments by article, then sort the groups chronologically by the
+  // article's own date field (YYYY-MM-DD, string-sortable as-is). Only fragments that pass
+  // the active filters appear inside a given article's group — an article shows up at all
+  // only if at least one of its fragments matches.
+  const byArticle = {};
+  matched.forEach(f=>{
+    (byArticle[f.article_id] = byArticle[f.article_id] || []).push(f);
+  });
+  const articleGroups = Object.keys(byArticle).map(articleId=>({
+    art: article(articleId), frags: byArticle[articleId]
+  })).sort((a,b)=>{
+    const da = a.art ? a.art.date : '';
+    const db = b.art ? b.art.date : '';
+    return da < db ? -1 : da > db ? 1 : 0;
+  });
+
+  const groupsHTML = articleGroups.map(({art,frags})=>{
+    const yearCls = art ? ('y'+art.year) : '';
+    const articleMyths = art ? getMyths(art) : [];
+    const badges = articleMyths.map(registerBadgeHTML).join('');
+    const metaChips = [
+      art && art.topic_primary ? `<span class="eg-chip">${escapeHTML(topicLabel(art.topic_primary))}</span>` : '',
+      art ? `<span class="eg-chip eg-chip-author">${escapeHTML(authorLabel(art.author_id))}</span>` : ''
+    ].join('');
+    return `<details class="evidence-group ${yearCls}">
+      <summary>
+        <div class="eg-summary-top">
+          <span class="eg-date">${art ? escapeHTML(art.date||art.year) : ''}</span>
+          <span class="eg-count">${frags.length} fragment${frags.length===1?'':'s'}</span>
+        </div>
+        <div class="eg-title">${art ? escapeHTML(art.title) : 'Unknown article'}</div>
+        ${badges || metaChips ? `<div class="eg-tags">${badges}${metaChips}</div>` : ''}
+      </summary>
+      <div class="eg-body">
+        ${frags.map(f=>{
+          const myths = getMyths(f);
+          const regLbl = myths.length ? myths.map(m=>m.stance==='deflated'?'deflated':m.register).join(', ') : '—';
+          return `<div class="result-row" data-open-frag="${f.id}">
+            <div class="rtext">${escapeHTML((f.quotation||'').slice(0,140))}${f.quotation && f.quotation.length>140?'…':''}</div>
+            <div class="rreg">${escapeHTML(regLbl)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </details>`;
+  }).join('');
+
+  container.innerHTML = `<div class="results-count">${matched.length} of ${total} fragments match, across ${articleGroups.length} article${articleGroups.length===1?'':'s'} (${noMythPct}% of all fragments carry no myth coding — filtering by myth will always exclude most of the corpus)</div>`
+    + groupsHTML;
+
+  container.querySelectorAll('[data-open-frag]').forEach(row=>{
+    row.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openFragmentOverlay(row.getAttribute('data-open-frag'));
+    });
+  });
+}
+
+function wireEvidenceFilters(){
+  document.querySelectorAll('[data-dim]').forEach(input=>{
+    input.addEventListener('change', ()=>{
+      const dim = input.getAttribute('data-dim');
+      const val = input.value;
+      if(!activeFilters[dim]) activeFilters[dim] = new Set();
+      if(input.checked) activeFilters[dim].add(val); else activeFilters[dim].delete(val);
+      if(!activeFilters[dim].size) delete activeFilters[dim];
+      filtersToURL();
+      renderEvidenceResults();
+    });
+  });
+  const clearBtn = document.getElementById('clear-filters-btn');
+  if(clearBtn) clearBtn.addEventListener('click', ()=>{
+    activeFilters = {};
+    filtersToURL();
+    document.getElementById('app').innerHTML = renderEvidence();
+    wireEvidenceFilters();
+    renderEvidenceResults();
+  });
+
+  document.querySelectorAll('[data-show-all-for]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const group = btn.closest('.filter-group');
+      group.querySelectorAll('label[data-hidden-overflow]').forEach(l=>{ l.style.display=''; });
+      btn.remove();
+    });
+  });
+
+  document.querySelectorAll('[data-search-for]').forEach(input=>{
+    input.addEventListener('input', ()=>{
+      const group = input.closest('.filter-group');
+      const q = input.value.trim().toLowerCase();
+      const showAllBtn = group.querySelector('[data-show-all-for]');
+      group.querySelectorAll('label[data-search-text]').forEach(label=>{
+        const match = !q || label.getAttribute('data-search-text').indexOf(q) !== -1;
+        // while searching, ignore the "hidden by default" overflow flag entirely
+        label.style.display = match ? '' : 'none';
+      });
+      if(showAllBtn) showAllBtn.style.display = q ? 'none' : '';
+    });
+  });
+}
+
+function openFragmentOverlay(fragId){
+  const f = fragment(fragId);
+  if(!f) return;
+
+  // if this is a split fragment, get all siblings
+  let content = fragmentCardHTML(f);
+  if(f.split_from){
+    const allFrags = allFragments();
+    const siblings = allFrags.filter(sf => sf.split_from === f.split_from);
+    const idx = siblings.findIndex(sf => sf.id === f.id);
+    if(siblings.length > 1){
+      const prev = idx > 0 ? siblings[idx-1] : null;
+      const next = idx < siblings.length-1 ? siblings[idx+1] : null;
+      content = `<div class="split-nav">`;
+      if(prev){
+        content += `<div class="split-shadow prev" data-nav-frag="${prev.id}"><span class="split-label">← Previous</span><p>${escapeHTML(prev.quotation.slice(0,100))}${prev.quotation.length>100?'…':''}</p></div>`;
+      }
+      content += `<div class="split-center">${fragmentCardHTML(f)}</div>`;
+      if(next){
+        content += `<div class="split-shadow next" data-nav-frag="${next.id}"><span class="split-label">Next →</span><p>${escapeHTML(next.quotation.slice(0,100))}${next.quotation.length>100?'…':''}</p></div>`;
+      }
+      content += `</div>`;
+    }
+  }
+
+  document.getElementById('overlay-content').innerHTML = content;
+  wireFragmentCardInteractions(document.getElementById('overlay-content'));
+
+  // wire split nav clicks
+  document.querySelectorAll('.split-shadow[data-nav-frag]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      openFragmentOverlay(el.getAttribute('data-nav-frag'));
+    });
+  });
+
+  document.getElementById('frag-overlay').classList.add('open');
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('overlay-close-btn').addEventListener('click', ()=>{
+    document.getElementById('frag-overlay').classList.remove('open');
+  });
+  document.getElementById('frag-overlay').addEventListener('click', (e)=>{
+    if(e.target.id==='frag-overlay') document.getElementById('frag-overlay').classList.remove('open');
+  });
+});
+
+/* article page */
+function renderArticlePage(id){
+  const a = article(id);
+  if(!a) return `<p class="pending">Article not found.</p>`;
+  const frags = fragmentsOfArticle(a);
+  return `<a href="#evidence" class="back-link" id="back-to-evidence">&larr; back to evidence</a>
+  <div class="article-page">
+    <h1 class="a-title">${escapeHTML(a.title)}</h1>
+    <div class="a-meta">${escapeHTML(authorLabel(a.author_id))} &middot; The New York Times &middot; ${escapeHTML(a.date||a.year)}
+      &middot; ${escapeHTML(peterLabel(a.peters_primary))}
+      ${a.topic_primary?(' &middot; '+escapeHTML(topicLabel(a.topic_primary))):''}
+      ${(authorOf(a)||{}).authorship_type?(' &middot; '+escapeHTML(authorOf(a).authorship_type)):' &middot; <span class="pending">authorship type uncoded</span>'}
+    </div>
+    ${frags.map(f=>fragmentCardHTML(f)).join('') || '<p class="pending">No curated fragments for this article yet.</p>'}
+  </div>`;
+}
+
+/* =========================================================================
+   7. LAYER 3 — METHOD
+   ========================================================================= */
+function renderMethod(){
+  return `<div class="method-page">
+    <h2>Lorem Ipsum</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
+    labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+    laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+    <h2>Dolor Sit Amet</h2>
+    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+    mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
+
+    <h2>Consectetur Adipiscing</h2>
+    <p>Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+    veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia
+    voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
+    voluptatem sequi nesciunt.</p>
+
+    <h2>Eiusmod Tempor</h2>
+    <p><b>Neque porro</b> quisquam est, qui dolorem ipsum quia dolor sit amet consectetur.
+    <b>Adipisci velit</b>, sed quia non numquam eius modi tempora incidunt ut labore et dolore
+    magnam aliquam quaerat voluptatem.</p>
+
+    <h2>Ut Enim Ad Minim</h2>
+    <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam,
+    nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea
+    voluptate velit esse quam nihil molestiae consequatur.</p>
+
+    <h2>Quis Autem Vel</h2>
+    <ul>
+      <li>Vel illum qui dolorem eum fugiat quo voluptas nulla pariatur, at vero eos et accusamus
+        et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum.</li>
+      <li>Deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
+        cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi.</li>
+      <li>Id est laborum et dolorum fuga, et harum quidem rerum facilis est et expedita
+        distinctio nam libero tempore.</li>
+    </ul>
+  </div>`;
+}
+
+/* =========================================================================
+   8. GRAPH VIEW
+   ========================================================================= */
+let graphSimulation = null;
+
+const EDGE_TYPE_LABELS = {
+  same_article:'Same article', same_author:'Same author', same_company:'Same company',
+  same_myth:'Same myth', same_article_myth:'Article myth (inherited)', same_topic:'Same topic', same_subtheme:'Same subtheme',
+  same_register:'Same register', same_metaphor:'Same metaphor cluster', keyword:'Shared keyword'
+};
+
+// Fixed color per edge type — same_article/same_metaphor/keyword already had one;
+// the six former "Structural" sub-types get their own hue here so toggling a single
+// dimension on/off in the UI reads as a distinct color disappearing from the canvas.
+const EDGE_TYPE_COLORS = {
+  same_article:'#9b7fd4',
+  same_author:'#5ec9c9',
+  same_company:'#e0a94e',
+  same_myth:'#c9556b',
+  // Same family as same_myth (both are "myth" edges) but darker/desaturated — this edge is
+  // the article's inherited climate, not the fragment's own claim, so it reads as weaker.
+  same_article_myth:'#8a5252',
+  same_topic:'#6a9fd8',
+  same_subtheme:'#8a6ea8',
+  same_register:'#5f9e6a',
+  same_metaphor:'#d88fb0',
+};
+
+// Myth compass mode: an optional positional force that pulls each fragment toward one of
+// four fixed poles by which myth narrative it carries, instead of letting position emerge
+// purely from connection physics. Angles in standard math convention (0°=east, going
+// counter-clockwise) but we only ever use N/E/S/W, so it doesn't matter which convention —
+// what matters is these four points are 90° apart around the canvas center.
+const MYTH_COMPASS = {
+  eoh:  {label:'End of History',   pole:'N', angle:-90},
+  eop:  {label:'End of Politics',  pole:'E', angle:0},
+  ehum: {label:'End of Humanity',  pole:'S', angle:90},
+  eog:  {label:'End of Geography', pole:'W', angle:180},
+};
+
+function buildGraphData(opts){
+  opts = opts || {};
+  const nodes = allFragments().map(f=>{
+    const a = article(f.article_id);
+    const myths = getMyths(f);
+    return {
+      id:f.id, frag:f, article:a,
+      year: a?a.year:null,
+      register: myths.length ? (myths[0].stance==='deflated'?'deflated':myths[0].register) : null,
+      degree:0
+    };
+  });
+  const nodeIndex = {}; nodes.forEach(n=>nodeIndex[n.id]=n);
+  const links = [];
+
+  function addLink(s,t,type,label){
+    if(s===t) return;
+    links.push({source:s,target:t,type,label});
+  }
+
+  // Applied to every group regardless of size — capping only groups above a size threshold
+  // (an earlier approach) still let dozens of small-to-mid groups each contribute a full
+  // clique, which is how 9 summed dimensions reached ~10.7k <line> elements and made every
+  // click sluggish (SVG line count is a real DOM-node cost, independent of whether anything
+  // is animating). A flat per-group cap keeps every dimension's contribution small.
+  //
+  // The cap itself scales with how many edge dimensions are turned on at once, instead of
+  // being one fixed number. With all 9 dimensions on, 8/group keeps the graph legible and
+  // fast (~2.5k lines total). But isolating a single dimension (e.g. clicking "only" on
+  // "Same myth") at that same cap=8 throws away 99%+ of that dimension's real connections —
+  // same_myth alone has only 4 groups covering the whole corpus, so cap=8 draws a nearly
+  // uniform, undifferentiated graph with no size/density variation to read. cap = 100 /
+  // (active dimensions) means one isolated dimension gets a much richer sample (cap≈100)
+  // while 9-at-once still converges to the known-good cap≈11.
+  const activeDimCount = Math.max(1,
+    (opts.sameArticle !== false ? 1 : 0) +
+    Object.values(opts.structural || {same_author:true,same_company:true,same_myth:true,same_article_myth:true,same_topic:true,same_subtheme:true,same_register:true,same_metaphor:true}).filter(Boolean).length +
+    (opts.keywords ? 1 : 0)
+  );
+  const MAX_EDGES_PER_GROUP = Math.round(100 / activeDimCount);
+  function cliqueOrSample(ids, type, label){
+    const full = ids.length*(ids.length-1)/2;
+    if(full <= MAX_EDGES_PER_GROUP){
+      for(let i=0;i<ids.length;i++) for(let j=i+1;j<ids.length;j++) addLink(ids[i],ids[j],type,label);
+      return;
+    }
+    let added = 0;
+    outer:
+    for(let k=1;k<ids.length;k++){
+      for(let i=0;i<ids.length;i++){
+        if(added >= MAX_EDGES_PER_GROUP) break outer;
+        addLink(ids[i], ids[(i+k)%ids.length], type, label);
+        added++;
+      }
+    }
+  }
+
+  if(opts.sameArticle !== false){
+    const byArticle = {};
+    allFragments().forEach(f=>{ (byArticle[f.article_id]=byArticle[f.article_id]||[]).push(f.id); });
+    // label = the article's own title, so a clicked same-article line's constellation is
+    // scoped to that one article's fragments, not every same_article link in the graph.
+    Object.entries(byArticle).forEach(([articleId,ids])=>{
+      const a = article(articleId);
+      cliqueOrSample(ids, 'same_article', a ? a.title : articleId);
+    });
+  }
+
+  // structural edges: group fragments by article-level attribute, then connect fragments across those articles.
+  // Each dimension is toggled independently in the UI (see EDGE_TYPE_LABELS) rather than as one
+  // combined "structural" switch, so a reader can isolate e.g. same-author connections alone.
+  const structRules = opts.structural || {same_author:true,same_company:true,same_myth:true,same_article_myth:true,same_topic:true,same_subtheme:true,same_register:true,same_metaphor:true};
+  function groupAndLink(keyFn, type, labelFn){
+    const groups = {};
+    allFragments().forEach(f=>{
+      const a = article(f.article_id);
+      const keys = keyFn(f,a);
+      keys.forEach(k=>{ if(k==null) return; (groups[type+'::'+k] = groups[type+'::'+k]||[]).push(f.id); });
+    });
+    Object.keys(groups).forEach(groupKey=>{
+      const ids = groups[groupKey];
+      const rawKey = groupKey.slice(type.length+2);
+      const label = labelFn ? labelFn(rawKey) : rawKey;
+      cliqueOrSample(ids, type, label);
+    });
+  }
+  if(structRules.same_author) groupAndLink((f,a)=>a?[a.author_id]:[], 'same_author', authorLabel);
+  if(structRules.same_company) groupAndLink((f,a)=>a?a.company_ids:[], 'same_company', id=>(company(id)||{}).label||id);
+  if(structRules.same_myth) groupAndLink((f)=>getMyths(f).map(m=>m.narrative), 'same_myth', id=>(myth(id)||{}).label||id);
+  // Article myth: connects every fragment in an article that carries a given myth, by the
+  // ARTICLE's own myth_ids rather than the fragment's. Deliberately includes fragments that
+  // also have that myth directly (overlapping with same_myth when both are on) — this
+  // dimension's point is to show the article's total mythic "climate," not just the subset
+  // of fragments making the claim explicitly. Fragments with no myth of their own but sitting
+  // inside a myth-carrying article (231 of 473 — nearly half the corpus) only ever surface
+  // through this edge, never through same_myth.
+  if(structRules.same_article_myth) groupAndLink((f,a)=>getMyths(a).map(m=>m.narrative), 'same_article_myth', id=>(myth(id)||{}).label||id);
+  if(structRules.same_topic) groupAndLink((f,a)=>a?[a.topic_primary]:[], 'same_topic', topicLabel);
+  if(structRules.same_subtheme) groupAndLink((f)=>getMyths(f).map(m=>m.subtheme).filter(Boolean), 'same_subtheme');
+  if(structRules.same_register) groupAndLink((f)=>getMyths(f).map(m=>m.stance==='deflated'?'deflated':m.register).filter(Boolean), 'same_register');
+  if(structRules.same_metaphor) groupAndLink((f,a)=>a?a.metaphor_category_ids:[], 'same_metaphor', metaphorLabel);
+
+  // thematic (keyword) edges — direct structural links between fragments sharing an
+  // exact keyword tag. Fragments carry only 1–3 keywords each (92-term controlled
+  // vocabulary), so exact-match grouping is both cheaper and more legible than
+  // Jaccard similarity over a near-empty set intersection would have been.
+  const anyKeywords = allFragments().some(f=>f.keywords && f.keywords.length);
+  if(opts.keywords && anyKeywords){
+    groupAndLink((f)=>f.keywords||[], 'keyword', keywordLabel);
+  }
+
+  // degree is (re)computed by the caller once cross-era filtering (if any) has been applied
+  return {nodes, links, anyKeywords};
+}
+
+// Shared copy for both the first-visit overlay and the always-available sidebar panel —
+// one source of text so the two never drift out of sync with each other.
+// Inline demo nodes reuse the graph's real CSS variables (var(--amber), var(--sublime),
+// etc.) rather than hardcoded hex — if the palette ever changes, the guide's swatches
+// update automatically instead of silently drifting out of sync with the actual canvas.
+function demoNode(fill, outline, r){
+  r = r || 11;
+  const strokeAttr = outline ? `stroke="${outline}" stroke-width="2.5"` : '';
+  return `<svg class="demo-node" width="${r*2+6}" height="${r*2+6}" viewBox="0 0 ${r*2+6} ${r*2+6}">
+    <circle cx="${r+3}" cy="${r+3}" r="${r}" fill="${fill}" ${strokeAttr}/>
+  </svg>`;
+}
+function demoLine(color, width){
+  return `<svg class="demo-line" width="46" height="10" viewBox="0 0 46 10">
+    <line x1="2" y1="5" x2="44" y2="5" stroke="${color}" stroke-width="${width||1.6}"/>
+  </svg>`;
+}
+
+// One step's worth of markup + a short label used by the stepper dots/counter.
+const GRAPH_GUIDE_STEPS = [
+  {
+    label:'What you’re looking at',
+    html:`<p>Each <b>circle</b> is one coded fragment — a passage from the corpus. Each <b>line</b>
+      is a connection between two fragments that share something: the same author, the same
+      company, the same myth, a keyword, and so on.</p>
+      <p>The graph doesn't argue anything on its own — it's a way to see how densely the corpus
+      clusters around a given trait.</p>`
+  },
+  {
+    label:'Node color = era',
+    html:`<p>A circle's <b>fill color</b> tells you which year that fragment comes from:</p>
+      <div class="demo-row">
+        <div class="demo-item">${demoNode('var(--amber)')}<span>1999</span></div>
+        <div class="demo-item">${demoNode('var(--turq)')}<span>2025</span></div>
+      </div>
+      <p class="hint">Size tells you something too — bigger circles have more connections under
+      the filters currently on.</p>`
+  },
+  {
+    label:'Outline = myth register',
+    html:`<p>A circle's <b>outline color</b> — when it has one — shows the myth register that
+      fragment was coded with. No outline means it doesn't carry a myth register at all.</p>
+      <div class="demo-row wrap">
+        <div class="demo-item">${demoNode('var(--panel)','var(--sublime)')}<span>Sublime</span></div>
+        <div class="demo-item">${demoNode('var(--panel)','var(--demonic)')}<span>Demonic</span></div>
+        <div class="demo-item">${demoNode('var(--panel)','var(--paired)')}<span>Paired</span></div>
+        <div class="demo-item">${demoNode('var(--panel)','var(--deflated)')}<span>Deflated</span></div>
+        <div class="demo-item">${demoNode('var(--panel)',null)}<span>No register</span></div>
+      </div>`
+  },
+  {
+    label:'Lines = edge type',
+    html:`<p>A line's <b>color</b> marks what kind of connection it is — matching the swatches
+      next to each checkbox in "Edge types" in the sidebar:</p>
+      <div class="demo-row wrap">
+        <div class="demo-item">${demoLine(EDGE_TYPE_COLORS.same_article)}<span>Same article</span></div>
+        <div class="demo-item">${demoLine(EDGE_TYPE_COLORS.same_author)}<span>Same author</span></div>
+        <div class="demo-item">${demoLine(EDGE_TYPE_COLORS.same_myth)}<span>Same myth</span></div>
+        <div class="demo-item">${demoLine(EDGE_TYPE_COLORS.same_article_myth)}<span>Article myth</span></div>
+      </div>
+      <p><b>Same myth</b> connects fragments that each carry a myth directly. <b>Article myth</b> is
+      different: it connects every fragment inside an article that carries a given myth, even
+      fragments that don't make that claim themselves — the article's ambient mythic climate,
+      not the fragment's own words. Nearly half the corpus (231 of 473 fragments) has no myth of
+      its own but sits inside a myth-carrying article, and this is the only edge that surfaces
+      that.</p>
+      <p class="hint">Shared-keyword lines are the exception: each individual keyword gets its own
+      color, so two keyword lines being different colors just means different keywords — not
+      different edge types.</p>`
+  },
+  {
+    label:'Clicking a node',
+    html:`<p><b>Click a node</b> to highlight it and everything directly linked to it — everything
+      else fades out. Click it again, or click empty canvas, to clear the highlight.</p>`
+  },
+  {
+    label:'Clicking a line',
+    html:`<p><b>Click a line</b> to highlight its whole <em>constellation</em>: every fragment that
+      shares that exact trait — e.g. every fragment by the same author — not just the two
+      fragments that one line happens to connect.</p>
+      <p>A side panel lists every member; click one to open its full detail card.</p>
+      <p class="hint">Lines have a wide invisible hit area, so you don't need to click the exact
+      pixel of a thin line — anywhere close to it works.</p>`
+  },
+  {
+    label:'Center vs. periphery',
+    html:`<p>In the default layout, position isn't coded data — it's a side effect of physics.
+      Every node pushes every other node away; lines pull connected nodes toward each other. A
+      fragment with many connections has several lines pulling it inward from different
+      directions at once, so it tends to settle near the middle of its neighborhood. A fragment
+      with few or no connections has nothing pulling it back in, so the same push-apart force
+      drifts it out to the edge.</p>
+      <p><b>Central = well-connected under the current filters, not "more important."</b> Turn a
+      dimension off and the same fragment can drift from center to edge, or back.</p>
+      <p class="hint">This changes in Myth Compass layout — see the next step.</p>`
+  },
+  {
+    label:'Myth compass layout',
+    html:`<p>Turn on <b>"Myth compass layout"</b> in the sidebar and position stops being purely
+      emergent — each fragment is pulled toward a fixed point by which myth narrative it
+      carries:</p>
+      <div class="demo-row wrap">
+        <div class="demo-item">${demoNode('var(--panel)','var(--ink-faint)')}<span>N · End of History</span></div>
+        <div class="demo-item">${demoNode('var(--panel)','var(--ink-faint)')}<span>E · End of Politics</span></div>
+        <div class="demo-item">${demoNode('var(--panel)','var(--ink-faint)')}<span>S · End of Humanity</span></div>
+        <div class="demo-item">${demoNode('var(--panel)','var(--ink-faint)')}<span>W · End of Geography</span></div>
+      </div>
+      <p>A fragment coded with two or three myths at once (rare) lands <em>between</em> those poles,
+      not on just one. A fragment with no myth of its own but whose article carries one is still
+      pulled toward that pole — just much more weakly, landing noticeably closer to center. That
+      weaker pull shows as a <b>dashed outline</b> instead of a solid one, so you can tell "this
+      fragment makes the claim" apart from "this fragment sits in an article that does." A
+      fragment with genuinely no myth anywhere — neither its own nor its article's — settles
+      at dead center.</p>
+      <p class="hint">Connection lines are still drawn and still pull a little, so a fragment can
+      sit slightly off its exact pole if it's strongly linked to a cluster elsewhere — the compass
+      is the dominant force, not the only one.</p>`
+  },
+  {
+    label:'Edge density',
+    html:`<p>All nine edge types are on by default. A few (same myth, same company, same metaphor
+      cluster) collapse the corpus into a handful of very large groups, so those connections are
+      deliberately sampled rather than drawn in full — otherwise the graph would be an
+      unreadable wall of lines.</p>
+      <p>Turn dimensions off with the checkboxes, or use "select none" and add back only the one
+      you want to study in isolation.</p>`
+  }
+];
+
+function graphGuideHTML(){
+  // Non-stepped fallback — used by the always-open sidebar panel, where a full scroll is
+  // fine (it's opt-in and doesn't block the canvas), so all steps render as one column.
+  return GRAPH_GUIDE_STEPS.map(s=>`<div class="guide-block"><h4>${escapeHTML(s.label)}</h4>${s.html}</div>`).join('');
+}
+
+function renderGraph(){
+  return `<div class="graph-shell">
+    <div class="graph-controls">
+      <details class="guide-panel" id="graph-guide-panel">
+        <summary>&#9432; How to read this graph</summary>
+        ${graphGuideHTML()}
+      </details>
+
+      <h4>Edge types</h4>
+      <div class="hint" style="margin-bottom:.5rem;">Click "only" to isolate a single dimension in one click, instead of unchecking every other one by hand.</div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-article" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_article}"></i>Same article</label>
+        <button class="edge-only-btn" data-only="edge-same-article">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-author" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_author}"></i>Same author</label>
+        <button class="edge-only-btn" data-only="edge-same-author">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-company" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_company}"></i>Same company</label>
+        <button class="edge-only-btn" data-only="edge-same-company">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-myth" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_myth}"></i>Same myth</label>
+        <button class="edge-only-btn" data-only="edge-same-myth">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-article-myth" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_article_myth}"></i>Article myth <span class="eg-chip" style="padding:.05rem .3rem;font-size:.55rem;">inherited</span></label>
+        <button class="edge-only-btn" data-only="edge-same-article-myth">only</button>
+      </div>
+      <div class="hint" style="margin:-.3rem 0 .5rem;">Connects fragments whose ARTICLE carries a myth, even when the fragment itself doesn't — the myth's ambient climate, not the fragment's own claim.</div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-topic" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_topic}"></i>Same topic</label>
+        <button class="edge-only-btn" data-only="edge-same-topic">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-subtheme" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_subtheme}"></i>Same subtheme</label>
+        <button class="edge-only-btn" data-only="edge-same-subtheme">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-register" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_register}"></i>Same register</label>
+        <button class="edge-only-btn" data-only="edge-same-register">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label><input type="checkbox" id="edge-same-metaphor" checked> <i class="edge-swatch" style="background:${EDGE_TYPE_COLORS.same_metaphor}"></i>Same metaphor cluster</label>
+        <button class="edge-only-btn" data-only="edge-same-metaphor">only</button>
+      </div>
+      <div class="edge-type-row">
+        <label id="edge-keyword-label"><input type="checkbox" id="edge-keyword" checked> <i class="edge-swatch" id="keyword-swatch"></i>Thematic (shared keyword)</label>
+        <button class="edge-only-btn" data-only="edge-keyword">only</button>
+      </div>
+      <div class="hint" id="keyword-hint" style="display:none">no fragments carry keyword coding yet</div>
+      <button class="show-all-filter" id="edge-select-all" style="margin-top:.3rem;">select all</button>
+      <button class="show-all-filter" id="edge-select-none">select none</button>
+
+      <h4>View</h4>
+      <label><input type="checkbox" id="cross-era-only"> Only cross-era connections</label>
+      <label><input type="checkbox" id="compass-mode"> Myth compass layout</label>
+      <div class="hint">Pulls each fragment toward N/E/S/W by which myth it carries (see the
+      guide). Fragments with no myth settle in the center; connection lines stay visible but
+      pull less strongly than the compass while this is on.</div>
+
+      <h4>Legend</h4>
+      <div class="hint">Node color = era (amber 1999 / turquoise 2025)<br>Node outline = myth register<br>Dashed outline (compass mode only) = pulled by the article's inherited myth, not its own<br>Node size = connection count<br>Line color = edge type (see swatches above; shared-keyword lines are colored per keyword)</div>
+    </div>
+    <div id="graph-canvas-wrap"></div>
+  </div>`;
+}
+
+const GRAPH_GUIDE_SEEN_KEY = 'bb_graph_guide_seen';
+let graphGuideStepIndex = 0;
+
+function renderGraphGuideStep(){
+  const content = document.getElementById('graph-guide-content');
+  if(!content) return;
+  const n = GRAPH_GUIDE_STEPS.length;
+  const step = GRAPH_GUIDE_STEPS[graphGuideStepIndex];
+  const dots = GRAPH_GUIDE_STEPS.map((s,i)=>
+    `<button class="guide-dot ${i===graphGuideStepIndex?'active':''}" data-goto-step="${i}" aria-label="Step ${i+1}: ${escapeHTML(s.label)}"></button>`
+  ).join('');
+
+  content.innerHTML = `
+    <div class="guide-step-count">Step ${graphGuideStepIndex+1} of ${n}</div>
+    <h2>${escapeHTML(step.label)}</h2>
+    <div class="guide-step-body">${step.html}</div>
+    <div class="guide-dots">${dots}</div>
+    <div class="guide-nav-row">
+      <button class="guide-nav-btn" id="guide-prev-btn" ${graphGuideStepIndex===0?'disabled':''}>&larr; Back</button>
+      <button class="guide-nav-btn guide-nav-btn-primary" id="guide-next-btn">
+        ${graphGuideStepIndex===n-1 ? 'Done' : 'Next →'}
+      </button>
+    </div>`;
+
+  content.querySelectorAll('[data-goto-step]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ graphGuideStepIndex = +btn.getAttribute('data-goto-step'); renderGraphGuideStep(); });
+  });
+  document.getElementById('guide-prev-btn').addEventListener('click', ()=>{
+    if(graphGuideStepIndex>0){ graphGuideStepIndex--; renderGraphGuideStep(); }
+  });
+  document.getElementById('guide-next-btn').addEventListener('click', ()=>{
+    if(graphGuideStepIndex < n-1){ graphGuideStepIndex++; renderGraphGuideStep(); }
+    else document.getElementById('graph-guide-overlay').classList.remove('open');
+  });
+}
+
+function openGraphGuideOverlay(){
+  graphGuideStepIndex = 0;
+  renderGraphGuideStep();
+  document.getElementById('graph-guide-overlay').classList.add('open');
+  // Marked "seen" the moment it's shown, not only on close — otherwise navigating away
+  // and back to Connections before dismissing it would keep popping the modal open again.
+  try{ localStorage.setItem(GRAPH_GUIDE_SEEN_KEY, '1'); }catch(e){}
+}
+
+function wireGraphGuideOverlay(){
+  const overlay = document.getElementById('graph-guide-overlay');
+  const closeBtn = document.getElementById('graph-guide-close-btn');
+  closeBtn.onclick = ()=> overlay.classList.remove('open');
+  overlay.onclick = (e)=>{ if(e.target.id==='graph-guide-overlay') closeBtn.onclick(); };
+
+  let alreadySeen = false;
+  try{ alreadySeen = localStorage.getItem(GRAPH_GUIDE_SEEN_KEY) === '1'; }catch(e){}
+  if(!alreadySeen) openGraphGuideOverlay();
+}
+
+function initGraph(){
+  const wrap = document.getElementById('graph-canvas-wrap');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  const width = wrap.clientWidth || 800;
+  const height = wrap.clientHeight || 600;
+
+  wireGraphGuideOverlay();
+
+  const state = {
+    sameAuthor:true, sameCompany:true, sameMyth:true, sameArticleMyth:true, sameTopic:true, sameSubtheme:true, sameRegister:true,
+    sameMetaphor:true, sameArticle:true, keywords:true, crossEraOnly:false, compassMode:false
+  };
+
+  // Compass target for one fragment: the average position of the poles for every myth it
+  // carries, or the canvas center if it carries none. Fragments with 2–3 myths (rare — 15 of
+  // 473) land between their poles rather than snapping to just one, so "this node sits
+  // between End of History and End of Politics" stays visually true to the coding.
+  //
+  // A fragment with no myth of its own but whose ARTICLE carries one (231 of 473 — nearly
+  // half the corpus) still gets pulled toward that pole, but at a fraction of the radius
+  // (INHERITED_PULL_FRACTION) — the article's mythic climate is a real but weaker force than
+  // the fragment making the claim directly, so it should land noticeably closer to center,
+  // not on the pole itself. Returns `inherited:true` in that case so the caller can style it
+  // differently (see the fainter node outline in the tick/render code).
+  const INHERITED_PULL_FRACTION = 0.4;
+
+  // Deterministic per-fragment offset (same hash pattern as colorKeyword below), scattered
+  // across a small disc rather than a single point. Without this, every fragment sharing
+  // exactly one myth (90 fragments for End of History alone) targets the identical pixel —
+  // no amount of repulsion competes cleanly against dozens of nodes all being pulled to one
+  // point, so the cluster just compresses into a solid mass. Spreading the *targets*
+  // themselves fixes it at the source instead of fighting it with stronger forces.
+  const JITTER_RADIUS_FRACTION = 0.16;
+  function jitterOffset(seedStr, maxR){
+    let h1=0; for(let i=0;i<seedStr.length;i++) h1 = (h1*31 + seedStr.charCodeAt(i)) >>> 0;
+    let h2=0; for(let i=0;i<seedStr.length;i++) h2 = (h2*37 + seedStr.charCodeAt(i) + 7) >>> 0;
+    const angle = (h1 % 1000)/1000 * Math.PI*2;
+    // sqrt so points distribute evenly across the disc's *area*, not bunched at the center
+    const dist = Math.sqrt((h2 % 1000)/1000) * maxR;
+    return { dx: Math.cos(angle)*dist, dy: Math.sin(angle)*dist };
+  }
+
+  function compassTarget(frag, art, cx, cy, radius){
+    const ownMyths = getMyths(frag);
+    let poles = ownMyths.map(m => MYTH_COMPASS[m.narrative]).filter(Boolean);
+    let effectiveRadius = radius;
+    let inherited = false;
+    if(!poles.length){
+      const articleMyths = getMyths(art);
+      poles = articleMyths.map(m => MYTH_COMPASS[m.narrative]).filter(Boolean);
+      if(poles.length){ inherited = true; effectiveRadius = radius * INHERITED_PULL_FRACTION; }
+    }
+    if(!poles.length) return {x:cx, y:cy, inherited:false};
+    const sum = poles.reduce((acc,p)=>{
+      const rad = p.angle * Math.PI/180;
+      acc.x += Math.cos(rad); acc.y += Math.sin(rad);
+      return acc;
+    }, {x:0,y:0});
+    const baseX = cx + (sum.x/poles.length)*effectiveRadius, baseY = cy + (sum.y/poles.length)*effectiveRadius;
+    const j = jitterOffset(frag.id, radius*JITTER_RADIUS_FRACTION);
+    return { x: baseX + j.dx, y: baseY + j.dy, inherited };
+  }
+
+  const svg = d3.select(wrap).append('svg').attr('viewBox',[0,0,width,height]);
+  const g = svg.append('g');
+  svg.call(d3.zoom().scaleExtent([0.2,4]).on('zoom', (ev)=> g.attr('transform', ev.transform)));
+
+  const tooltip = d3.select(wrap).append('div').attr('class','node-tooltip').style('display','none');
+  const sidePanel = document.createElement('div');
+  sidePanel.className = 'graph-side-panel';
+  wrap.appendChild(sidePanel);
+
+  const colorEra = y => y==='1999' ? getCSS('--amber') : getCSS('--turq');
+  const colorReg = r => ({sublime:getCSS('--sublime'),demonic:getCSS('--demonic'),paired:getCSS('--paired'),deflated:getCSS('--deflated')}[r] || 'rgba(255,255,255,.25)');
+
+  function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  // deterministic hue per keyword string, so the same keyword always renders the
+  // same edge color across rebuilds/filters — not meant to be individually legible
+  // against 92 possible hues, only to visually separate distinct keyword clusters.
+  function colorKeyword(label){
+    let h=0; for(let i=0;i<label.length;i++) h = (h*31 + label.charCodeAt(i)) >>> 0;
+    return `hsl(${h%360},55%,62%)`;
+  }
+
+  let linkSel, nodeSel, simulation;
+  let selection = null; // {mode:'node', nodeId} | {mode:'constellation', edgeType, edgeLabel} | null
+
+  // Two highlight modes, one rendering path:
+  //  - 'node'          → the clicked node + everything directly linked to it.
+  //  - 'constellation' → the clicked *line*'s whole group: every link sharing that same
+  //                      edge type+label (e.g. every "same author: Thomas L. Friedman" link),
+  //                      plus every node any of those links touch. This is what makes a
+  //                      single-line click show the whole cluster that line is a member of,
+  //                      not just the one pair it happens to connect.
+  // Recomputed from the *current* link selection each time, so it stays correct as edge-type
+  // checkboxes add/remove links underneath a held selection instead of going stale.
+  //
+  // Perf note: with ~10k links, doing this as several separate D3 .classed(fn) passes was
+  // measurably slow — each .classed() call re-evaluates its accessor per-element AND does
+  // its own classList read/write, so three chained calls means three full DOM touches per
+  // link. Below is one pass per selection that writes the whole class string in one go.
+  let highlightRAF = null;
+  function applyHighlight(){
+    if(!nodeSel || !linkSel) return;
+    if(highlightRAF) cancelAnimationFrame(highlightRAF);
+    highlightRAF = requestAnimationFrame(()=>{
+      highlightRAF = null;
+      if(!selection){
+        nodeSel.attr('class', null);
+        linkSel.attr('class', null);
+        return;
+      }
+      const activeNodeIds = new Set();
+      const linkState = new Array(linkSel.size());
+      linkSel.each(function(d,i){
+        const sId = typeof d.source==='object' ? d.source.id : d.source;
+        const tId = typeof d.target==='object' ? d.target.id : d.target;
+        let touches;
+        if(selection.mode==='node'){
+          touches = sId===selection.nodeId || tId===selection.nodeId;
+        } else {
+          touches = d.type===selection.edgeType && d.label===selection.edgeLabel;
+        }
+        if(touches){ activeNodeIds.add(sId); activeNodeIds.add(tId); }
+        linkState[i] = touches;
+      });
+      if(selection.mode==='node') activeNodeIds.add(selection.nodeId);
+      nodeSel.attr('class', d =>
+        (selection.mode==='node' && d.id===selection.nodeId) ? 'node-selected'
+        : (activeNodeIds.has(d.id) ? null : 'dimmed'));
+      linkSel.attr('class', (d,i) => linkState[i] ? 'link-active' : 'dimmed');
+    });
+  }
+
+  function selectNode(id){
+    selection = (selection && selection.mode==='node' && selection.nodeId===id) ? null : {mode:'node', nodeId:id};
+    applyHighlight();
+  }
+
+  function selectConstellation(edgeType, edgeLabel){
+    selection = (selection && selection.mode==='constellation' && selection.edgeType===edgeType && selection.edgeLabel===edgeLabel)
+      ? null : {mode:'constellation', edgeType, edgeLabel};
+    applyHighlight();
+  }
+
+  function build(){
+    const data = buildGraphData({
+      structural: {
+        same_author: state.sameAuthor, same_company: state.sameCompany, same_myth: state.sameMyth,
+        same_article_myth: state.sameArticleMyth,
+        same_topic: state.sameTopic, same_subtheme: state.sameSubtheme, same_register: state.sameRegister,
+        same_metaphor: state.sameMetaphor
+      },
+      sameArticle: state.sameArticle,
+      keywords: state.keywords
+    });
+    document.getElementById('edge-keyword').disabled = !data.anyKeywords;
+    document.getElementById('edge-keyword-label').classList.toggle('disabled', !data.anyKeywords);
+    document.getElementById('keyword-hint').style.display = data.anyKeywords ? 'none' : 'block';
+    const keywordOnlyBtn = document.querySelector('.edge-only-btn[data-only="edge-keyword"]');
+    if(keywordOnlyBtn) keywordOnlyBtn.disabled = !data.anyKeywords;
+
+    let links = data.links;
+    const nodeById = {}; data.nodes.forEach(n=>nodeById[n.id]=n);
+    if(state.crossEraOnly){
+      links = links.filter(l=>{
+        const s = nodeById[typeof l.source==='object'?l.source.id:l.source];
+        const t = nodeById[typeof l.target==='object'?l.target.id:l.target];
+        return s && t && s.year !== t.year;
+      });
+    }
+    links.forEach(l=>{
+      const s = nodeById[typeof l.source==='object'?l.source.id:l.source];
+      const t = nodeById[typeof l.target==='object'?l.target.id:l.target];
+      if(s) s.degree++; if(t) t.degree++;
+    });
+
+    g.selectAll('*').remove();
+    if(simulation) simulation.stop();
+
+    // Single source of truth for node radius, shared by the visible circle and the collide
+    // force so they can never drift apart. Widened deliberately (2.5–17.5px, a 7x spread)
+    // instead of the earlier 3–12px range — with ~470 nodes most of them cluster in a narrow
+    // mid-degree band, so a subtler scale reads as "everything's the same size" even though
+    // the underlying degree count really does vary node to node.
+    const nodeRadius = d => 2.5 + Math.min(15, d.degree*0.9);
+
+    // Compass mode: each node's forceX/forceY target is precomputed once per build() (not
+    // per tick — the myth composition of a fragment never changes mid-simulation), then a
+    // positional force pulls toward it. Left attached but at strength 0 when compass mode is
+    // off, rather than added/removed from the simulation, so toggling the checkbox doesn't
+    // need to rebuild the whole force list — just flip the strength and reheat.
+    const compassRadius = Math.min(width,height) * 0.34;
+    data.nodes.forEach(n=>{
+      const t = compassTarget(n.frag, n.article, width/2, height/2, compassRadius);
+      n.compassX = t.x; n.compassY = t.y; n.compassInherited = t.inherited;
+    });
+
+    // Faint crosshair only — drawn here (right after g.selectAll('*').remove() above, and
+    // after compassRadius exists) so it survives the clear and sits behind everything added
+    // afterward. The pole *text* labels are handled separately, after nodeSel, so they can
+    // render on top of the node clusters that pile up around each pole (see below).
+    if(state.compassMode){
+      const axisR = compassRadius + 10;
+      const compassAxisG = g.append('g').attr('class','compass-guides');
+      compassAxisG.append('line').attr('class','compass-axis')
+        .attr('x1', width/2 - axisR).attr('x2', width/2 + axisR)
+        .attr('y1', height/2).attr('y2', height/2);
+      compassAxisG.append('line').attr('class','compass-axis')
+        .attr('x1', width/2).attr('x2', width/2)
+        .attr('y1', height/2 - axisR).attr('y2', height/2 + axisR);
+    }
+
+    // With compass targets now jittered across a small disc (see jitterOffset above) instead
+    // of every same-pole node aiming at one identical pixel, physics no longer has to fight a
+    // structural collision — repulsion here is back closer to the free-layout value, just
+    // slightly softer so the compass force still visibly wins the shape of the layout.
+    simulation = d3.forceSimulation(data.nodes)
+      .force('link', d3.forceLink(links).id(d=>d.id).distance(70).strength(state.compassMode?0.015:0.04))
+      .force('charge', d3.forceManyBody().strength(state.compassMode?-90:-160).distanceMax(400))
+      .force('center', d3.forceCenter(width/2, height/2).strength(state.compassMode?0.02:1))
+      .force('collide', d3.forceCollide(d=>nodeRadius(d)+(state.compassMode?2:1)))
+      .force('compassX', d3.forceX(d=>d.compassX).strength(state.compassMode?0.25:0))
+      .force('compassY', d3.forceY(d=>d.compassY).strength(state.compassMode?0.25:0))
+      .alphaDecay(0.02);
+
+    // Each edge is actually two overlaid <line>s: a fat, fully transparent one that only
+    // exists to give the mouse a bigger, easier target (SVG hit-testing follows the stroke
+    // itself, so a 0.6px line is nearly impossible to click precisely), and the thin visible
+    // one on top for the actual drawing. Interaction listeners live on the invisible hit
+    // layer; linkSel (used by tick/highlight) stays pointed at the visible layer.
+    const linkGroup = g.append('g').attr('stroke-opacity',0.35);
+    const linkHitSel = linkGroup.selectAll('line.link-hit')
+      .data(links).join('line')
+      .attr('class','link-hit')
+      .attr('stroke','transparent')
+      .attr('stroke-width', 14)
+      .style('cursor', d=>d.label?'pointer':'default')
+      .on('mouseenter', (ev,d)=>{
+        if(!d.label) return;
+        const [px,py] = d3.pointer(ev, wrap);
+        tooltip.style('display','block')
+          .style('left',(px+12)+'px').style('top',(py+8)+'px')
+          .html(`<b>${escapeHTML(EDGE_TYPE_LABELS[d.type]||d.type)}</b><br>${escapeHTML(d.label)}`);
+      })
+      .on('mousemove', (ev)=>{ const [px,py] = d3.pointer(ev, wrap); tooltip.style('left',(px+12)+'px').style('top',(py+8)+'px'); })
+      .on('mouseleave', ()=> tooltip.style('display','none'))
+      .on('click', (ev,d)=>{
+        if(!d.label) return;
+        ev.stopPropagation();
+        selectConstellation(d.type, d.label);
+        const memberIds = new Set();
+        links.forEach(l=>{
+          if(l.type!==d.type || l.label!==d.label) return;
+          memberIds.add(typeof l.source==='object' ? l.source.id : l.source);
+          memberIds.add(typeof l.target==='object' ? l.target.id : l.target);
+        });
+        const nodesInGroup = Array.from(memberIds).map(id=>nodeById[id]).filter(Boolean);
+        openConstellationSidePanel(nodesInGroup, d.type, d.label, sidePanel);
+      });
+
+    linkSel = linkGroup.selectAll('line.link-visible')
+      .data(links).join('line')
+      .attr('class','link-visible')
+      .attr('stroke', d=> d.type==='keyword' ? colorKeyword(d.label||'') : (EDGE_TYPE_COLORS[d.type] || '#3a3850'))
+      .attr('stroke-width', d=> d.type==='same_article' ? 1.2 : (d.type==='keyword' ? 1 : 0.6))
+      .style('pointer-events','none');
+
+    nodeSel = g.append('g').selectAll('circle')
+      .data(data.nodes).join('circle')
+      .attr('r', nodeRadius)
+      .attr('fill', d=>colorEra(d.year))
+      .attr('stroke', d=>d.register ? colorReg(d.register) : (state.compassMode && d.compassInherited ? getCSS('--ink-faint') : 'none'))
+      .attr('stroke-width', d=>d.register ? 2 : (state.compassMode && d.compassInherited ? 1.2 : 0))
+      // Dashed outline = pulled by an inherited article myth rather than the fragment's own
+      // register/myth — only meaningful while compass mode is on, so it's a no-op otherwise.
+      .attr('stroke-dasharray', d=> state.compassMode && d.compassInherited ? '2,2' : null)
+      .attr('tabindex', 0)
+      .style('cursor','pointer')
+      .on('mouseenter', (ev,d)=>{
+        const [px,py] = d3.pointer(ev, wrap);
+        tooltip.style('display','block')
+          .style('left',(px+12)+'px').style('top',(py+8)+'px')
+          .html(`<b>${escapeHTML(d.frag.primary_subject||d.frag.id)}</b><br>${d.year||''} &middot; ${d.degree} links`);
+      })
+      .on('mousemove', (ev)=>{ const [px,py] = d3.pointer(ev, wrap); tooltip.style('left',(px+12)+'px').style('top',(py+8)+'px'); })
+      .on('mouseleave', ()=> tooltip.style('display','none'))
+      .on('click', (ev,d)=>{ ev.stopPropagation(); selectNode(d.id); openGraphSidePanel(d, sidePanel); })
+      .on('keypress', (ev,d)=>{ if(ev.key==='Enter'){ selectNode(d.id); openGraphSidePanel(d, sidePanel); } });
+
+    // Pole text labels — added to `g` LAST (after nodeSel), so SVG's paint order puts them
+    // above every node, no matter how densely a cluster piles up around a pole. Earlier
+    // versions drew these before the nodes and relied on distance + a backing rect to stay
+    // legible, but node clusters routinely grew wider than that margin and swallowed the
+    // text anyway; paint order is the only thing that actually guarantees visibility.
+    if(state.compassMode){
+      const labelR = compassRadius + 60;
+      const compassLabelG = g.append('g').attr('class','compass-guides');
+      Object.values(MYTH_COMPASS).forEach(p=>{
+        const rad = p.angle * Math.PI/180;
+        const lx = width/2 + Math.cos(rad)*labelR, ly = height/2 + Math.sin(rad)*labelR;
+        const text = `${p.pole} · ${p.label}`;
+        compassLabelG.append('rect').attr('class','compass-label-bg')
+          .attr('x', lx - text.length*3.2 - 6).attr('y', ly - 9)
+          .attr('width', text.length*6.4 + 12).attr('height', 18);
+        compassLabelG.append('text').attr('class','compass-label')
+          .attr('x', lx).attr('y', ly)
+          .attr('text-anchor','middle').attr('dominant-baseline','middle')
+          .text(text);
+      });
+      const centerText = 'no myth coded';
+      const centerY = height/2 - 18;
+      compassLabelG.append('rect').attr('class','compass-label-bg')
+        .attr('x', width/2 - centerText.length*2.7 - 5).attr('y', centerY - 7)
+        .attr('width', centerText.length*5.4 + 10).attr('height', 14);
+      compassLabelG.append('text').attr('class','compass-label compass-label-center')
+        .attr('x', width/2).attr('y', centerY)
+        .attr('text-anchor','middle').attr('dominant-baseline','middle')
+        .text(centerText);
+    }
+
+    simulation.on('tick', ()=>{
+      linkHitSel.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+      linkSel.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+      nodeSel.attr('cx',d=>d.x).attr('cy',d=>d.y);
+    });
+
+    applyHighlight();
+  }
+
+  build();
+
+  // Clicking empty canvas (not a node) clears the neighborhood highlight.
+  svg.on('click', ()=>{ selection = null; applyHighlight(); });
+
+  const EDGE_CHECKBOX_STATE_KEYS = {
+    'edge-same-article':'sameArticle', 'edge-same-author':'sameAuthor', 'edge-same-company':'sameCompany',
+    'edge-same-myth':'sameMyth', 'edge-same-article-myth':'sameArticleMyth', 'edge-same-topic':'sameTopic', 'edge-same-subtheme':'sameSubtheme',
+    'edge-same-register':'sameRegister', 'edge-same-metaphor':'sameMetaphor', 'edge-keyword':'keywords'
+  };
+  const edgeCheckboxIds = Object.keys(EDGE_CHECKBOX_STATE_KEYS);
+  edgeCheckboxIds.forEach(id=>{
+    document.getElementById(id).addEventListener('change', e=>{
+      state[EDGE_CHECKBOX_STATE_KEYS[id]] = e.target.checked;
+      build();
+    });
+  });
+  document.getElementById('edge-select-all').addEventListener('click', ()=>{
+    edgeCheckboxIds.forEach(id=>{
+      const el = document.getElementById(id);
+      if(el.disabled) return;
+      el.checked = true;
+      state[EDGE_CHECKBOX_STATE_KEYS[id]] = true;
+    });
+    build();
+  });
+  document.getElementById('edge-select-none').addEventListener('click', ()=>{
+    edgeCheckboxIds.forEach(id=>{
+      const el = document.getElementById(id);
+      if(el.disabled) return;
+      el.checked = false;
+      state[EDGE_CHECKBOX_STATE_KEYS[id]] = false;
+    });
+    build();
+  });
+  document.getElementById('cross-era-only').addEventListener('change', e=>{ state.crossEraOnly=e.target.checked; build(); });
+  document.getElementById('compass-mode').addEventListener('change', e=>{ state.compassMode=e.target.checked; build(); });
+
+  // "only" isolates one edge dimension in a single click — turns every other checkbox off
+  // and the clicked one on, instead of requiring "select none" + manually re-checking one.
+  document.querySelectorAll('.edge-only-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const targetId = btn.getAttribute('data-only');
+      edgeCheckboxIds.forEach(id=>{
+        const el = document.getElementById(id);
+        if(el.disabled) return;
+        const shouldBeOn = id===targetId;
+        el.checked = shouldBeOn;
+        state[EDGE_CHECKBOX_STATE_KEYS[id]] = shouldBeOn;
+      });
+      build();
+    });
+  });
+}
+
+function openGraphSidePanel(d, panel){
+  panel.innerHTML = `<button class="overlay-close" id="graph-panel-close" style="position:static;float:right;">&times;</button>`
+    + fragmentCardHTML(d.frag);
+  wireFragmentCardInteractions(panel);
+  panel.classList.add('open');
+  panel.querySelector('#graph-panel-close').addEventListener('click', ()=> panel.classList.remove('open'));
+}
+
+// A clicked line opens its whole constellation as a list of member fragments (rather than
+// one fragment card) — clicking a member drills into that fragment's own detail card.
+function openConstellationSidePanel(nodesInGroup, edgeType, edgeLabel, panel){
+  const rows = nodesInGroup.map(n => `<div class="constellation-row" data-frag-id="${escapeHTML(n.id)}">
+      <span class="era-dot" style="background:${n.year==='1999'?'var(--amber)':'var(--turq)'}"></span>
+      <span class="row-text">${escapeHTML(n.frag.primary_subject || (n.frag.quotation||'').slice(0,70))}</span>
+    </div>`).join('');
+  panel.innerHTML = `<button class="overlay-close" id="graph-panel-close" style="position:static;float:right;">&times;</button>
+    <div class="constellation-head">
+      <div class="m-eyebrow">${escapeHTML(EDGE_TYPE_LABELS[edgeType]||edgeType)}</div>
+      <h3>${escapeHTML(edgeLabel)}</h3>
+      <p class="pending">${nodesInGroup.length} fragment${nodesInGroup.length===1?'':'s'} in this constellation</p>
+    </div>
+    <div class="constellation-list">${rows}</div>`;
+  panel.classList.add('open');
+  panel.querySelector('#graph-panel-close').addEventListener('click', ()=> panel.classList.remove('open'));
+  panel.querySelectorAll('[data-frag-id]').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const n = nodesInGroup.find(x=>x.id===row.getAttribute('data-frag-id'));
+      if(n) openGraphSidePanel(n, panel);
+    });
+  });
+}
+
+/* =========================================================================
+   9. ROUTER
+   ========================================================================= */
+function navigateTo(view, params){
+  params = params || {};
+  if(view === 'article') location.hash = '#article/'+params.id;
+  else if(view === 'evidence') location.hash = '#evidence';
+  else location.hash = '#'+view;
+}
+
+function currentRoute(){
+  const h = location.hash.replace(/^#/, '');
+  if(h.startsWith('article/')) return {view:'article', id:h.split('/')[1]};
+  if(h.startsWith('evidence')) return {view:'evidence'};
+  if(h.startsWith('graph')) return {view:'graph'};
+  if(h.startsWith('method')) return {view:'method'};
+  return {view:'biography'};
+}
+
+function setActiveNav(view){
+  document.querySelectorAll('#topnav nav button').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-view')===view);
+  });
+}
+
+function render(){
+  const route = currentRoute();
+  const app = document.getElementById('app');
+  setActiveNav(route.view === 'article' ? 'evidence' : route.view);
+
+  if(route.view === 'biography'){
+    app.innerHTML = renderBiography();
+    wireBubbleIntro(app);
+    wireFragmentCardInteractions(app);
+    wireChapterScroll(app);
+    requestAnimationFrame(wireMetaphorDecks);
+    wireScrollReveal(app);
+  } else if(route.view === 'evidence'){
+    parseFiltersFromURL();
+    app.innerHTML = renderEvidence();
+    wireEvidenceFilters();
+    renderEvidenceResults();
+  } else if(route.view === 'article'){
+    app.innerHTML = renderArticlePage(route.id);
+    wireFragmentCardInteractions(app);
+    const back = document.getElementById('back-to-evidence');
+    if(back) back.addEventListener('click', (e)=>{ e.preventDefault(); location.hash='#evidence'; });
+  } else if(route.view === 'graph'){
+    app.innerHTML = renderGraph();
+    requestAnimationFrame(initGraph);
+  } else if(route.view === 'method'){
+    app.innerHTML = renderMethod();
+  }
+  window.scrollTo(0,0);
+}
+
+/* =========================================================================
+   10. INIT
+   ========================================================================= */
+function init(){
+  renderStatusFooter();
+  document.querySelectorAll('#topnav nav button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const v = btn.getAttribute('data-view');
+      location.hash = v === 'biography' ? '' : '#'+v;
+    });
+  });
+  window.addEventListener('hashchange', render);
+  render();
+}
+
+boot();
+</script>
+</body>
+</html>
